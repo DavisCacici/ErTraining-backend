@@ -21,7 +21,7 @@ class checkAuth
         $user = User::where('token', $token)->first();
         // dd($user);
         
-        if(!$user)
+        if(!$user || !isset($token))
         {
             abort(403, 'Access denied');
         }   

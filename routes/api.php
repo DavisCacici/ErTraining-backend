@@ -23,7 +23,7 @@ use App\Models\User;
 
 Route::post('/login', [UserController::class, 'login'])->name('login.user');
 
-// Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
+
 
 Route::middleware('tutor')->group(function(){
     Route::post('/register', [UserController::class, 'register'])->name('register.user');
@@ -42,4 +42,5 @@ Route::middleware('checkAuth')->group(function(){
         $user = User::find(4);
         return $user;
     });
+    Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
 });
