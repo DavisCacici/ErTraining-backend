@@ -20,23 +20,26 @@ use App\Models\User;
 //     return $request->user();
 // });
 
-
+//richiamando login return il token la chiamata la può fare chiunque
 Route::post('/login', [UserController::class, 'login'])->name('login.user');
 
 
-
+//in questo gruppo può fare le chiamate solo chi ha il ruole tutor
 Route::middleware('tutor')->group(function(){
     Route::post('/register', [UserController::class, 'register'])->name('register.user');
 });
 
+//in questo gruppo può fare le chiamate solo chi ha il ruole teacher
 Route::middleware('teacher')->group(function(){
 
 });
 
+//in questo gruppo può fare le chiamate solo chi ha il ruole student
 Route::middleware('student')->group(function(){
 
 });
 
+//in questo gruppo può fare le chiamate solo chi è autenticato
 Route::middleware('checkAuth')->group(function(){
     // Route::get('/users', function(){
     //     $user = User::find(4);
