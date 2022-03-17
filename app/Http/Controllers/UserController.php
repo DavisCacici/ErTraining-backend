@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 class UserController extends Controller
@@ -24,8 +24,7 @@ class UserController extends Controller
             // dd($request['password']);
             if(Hash::check($request->password, $user->password))
             {
-                $user->token = Hash::make(Str::random(20).$user->email);
-                $user->save();
+                $user->createToken();
                 $result = ['token'=>$user->token];
                 return response($result, 200);
             }
@@ -45,13 +44,12 @@ class UserController extends Controller
     {
         $token = $request->bearerToken();
         $user = User::where('token', $token)->first();
-        
-        $user->token = null;
-        $user->save();
+
+        $user->revoke();
         // dd($user);
         $responseMessage = "successfully logged out";
-        return response($responseMessage ,200);    
-        
+        return response()->json($responseMessage ,200);
+
     }
 
 //     protected $user;

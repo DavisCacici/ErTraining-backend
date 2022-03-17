@@ -38,9 +38,9 @@ Route::middleware('student')->group(function(){
 });
 
 Route::middleware('checkAuth')->group(function(){
-    Route::get('/users', function(){
-        $user = User::find(4);
-        return $user;
-    });
+    // Route::get('/users', function(){
+    //     $user = User::find(4);
+    //     return $user;
+    // });
     Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
 });
