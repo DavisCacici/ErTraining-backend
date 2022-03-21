@@ -27,6 +27,9 @@ Route::post('/login', [UserController::class, 'login'])->name('login.user');
 //in questo gruppo può fare le chiamate solo chi ha il ruole tutor
 Route::middleware('tutor')->group(function(){
     Route::post('/register', [UserController::class, 'register'])->name('register.user');
+    Route::get('/check', function (){
+        return response()->json("ci sono", 200);
+    });
 });
 
 //in questo gruppo può fare le chiamate solo chi ha il ruole teacher
@@ -41,9 +44,9 @@ Route::middleware('student')->group(function(){
 
 //in questo gruppo può fare le chiamate solo chi è autenticato
 Route::middleware('checkAuth')->group(function(){
-    // Route::get('/users', function(){
-    //     $user = User::find(4);
-    //     return $user;
-    // });
+    Route::get('/users', function(){
+        $user = User::find(4);
+        return $user;
+    });
     Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
 });
