@@ -15,6 +15,9 @@ class CreateProgresTable extends Migration
     {
         Schema::create('progres', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('step_id')->constrained();
+            $table->string('state');
+            $table->foreignId('user_course_id')->constrained('user_course');
             $table->timestamps();
         });
     }

@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Step extends Model
 {
     use HasFactory;
+
+    public function progress()
+    {
+        return $this->belongsToMany(Progres::class);
+    }
 }

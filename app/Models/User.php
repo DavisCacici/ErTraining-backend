@@ -23,7 +23,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'token'
+        'token',
+        'role_id'
     ];
 
     /**
@@ -56,5 +57,15 @@ class User extends Authenticatable
     {
         $this->token = null;
         $this->save();
+    }
+
+    public function courses()
+    {
+        return $this->belongsToMany(Course::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 }
