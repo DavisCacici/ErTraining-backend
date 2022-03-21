@@ -19,6 +19,6 @@ class Progres extends Model
 
     public function userCourse()
     {
-        return $this->belongsToMany(UserCourse::class);
+        return $this->belongsTo(UserCourse::class);
     }
 }
