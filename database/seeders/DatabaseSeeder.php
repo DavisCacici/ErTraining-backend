@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Progres;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -20,7 +21,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             UserSeeder::class,
-            StepSeeder::class
+            StepSeeder::class,
+            CourseSeeder::class,
+            CourseUserSeeder::class,
+            ProgresSeeder::class,
         ]);
 
     }

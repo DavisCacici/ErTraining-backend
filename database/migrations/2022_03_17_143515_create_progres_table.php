@@ -17,7 +17,7 @@ class CreateProgresTable extends Migration
             $table->id();
             $table->foreignId('step_id')->constrained();
             $table->string('state');
-            $table->foreignId('user_course_id')->constrained('user_course');
+            $table->bigInteger('course_user_id');
             $table->timestamps();
         });
     }

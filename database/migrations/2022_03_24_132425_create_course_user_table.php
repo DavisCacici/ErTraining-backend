@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserCourseTable extends Migration
+class CreateCourseUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateUserCourseTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_course', function (Blueprint $table) {
+        Schema::create('course_user', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('course_id')->constrained();
@@ -28,6 +28,6 @@ class CreateUserCourseTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_courses');
+        Schema::dropIfExists('course_users');
     }
 }

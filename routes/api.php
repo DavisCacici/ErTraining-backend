@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Models\Course;
+use App\Models\Progres;
 use App\Models\User;
 
 /*
@@ -22,6 +24,18 @@ use App\Models\User;
 
 //richiamando login return il token la chiamata la può fare chiunque
 Route::post('/login', [UserController::class, 'login'])->name('login.user');
+
+Route::get('/progres', function(){
+    $progres = Progres::find(1);
+    // dd($progres->courses);
+    return response()->json($progres->courseuser(), 200);
+});
+
+Route::get('/courseuser', function(){
+    $user = User::with('courses')->find(1);
+    // dd($progres->courses);
+    return response()->json($user, 200);
+});
 
 
 //in questo gruppo può fare le chiamate solo chi ha il ruole tutor
