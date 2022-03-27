@@ -22,12 +22,7 @@ class RoleSeeder extends Seeder
             avviare un corso
             creare utenti di qualsiasi ruolo
             aggiunge utenti ai corsi
-            togliere utenti ai corsi
-            eliminare utenti di qualsiasi ruolo
-            abilitare l’avvio di un gioco
-            vedere tutti i corsi
-            tutti gli utenti iscrittti ad un corso
-            vedere nella lista utenti vedere anche i corsi in cui è iscritto l’utente',
+            togliere utenti ai corsi',
         ]);
         DB::table('roles')->insert([
             'name' => 'teacher',

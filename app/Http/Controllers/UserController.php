@@ -18,14 +18,14 @@ class UserController extends Controller
         {
             return response($validator->errors()->all(), 500);
         }
-        $user = User::where('email',$request['email'])->first();
+        $user = User::where('email',$request['email'])->with('role')->first();
         if($user)
         {
             // dd($request['password']);
             if(Hash::check($request->password, $user->password))
             {
                 $user->createToken();
-                $result = ['token'=>$user->token];
+                $result = ['token'=>$user->token, 'role'=>$user->role];
                 return response($result, 200);
             }
             else

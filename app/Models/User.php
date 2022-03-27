@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
+    // use \Znck\Eloquent\Traits\BelongsToThrough;
 
     /**
      * The attributes that are mass assignable.
@@ -24,7 +25,8 @@ class User extends Authenticatable
         'email',
         'password',
         'token',
-        'role_id'
+        'role_id',
+        'last_request',
     ];
 
     /**
@@ -59,9 +61,15 @@ class User extends Authenticatable
         $this->save();
     }
 
+    // public function progres()
+    // {
+    //     return $this->hasMany(Progres::class);
+
+    // }
+
     public function courses()
     {
-        return $this->belongsToMany(Course::class);
+        return $this->belongsToMany(Course::class, 'course_user', 'course_id', 'user_id');
     }
 
     public function role()

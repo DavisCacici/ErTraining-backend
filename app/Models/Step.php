@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Step extends Model
 {
     use HasFactory;
+    protected $fillable = ['step', 'description'];
 
     public function progress()
     {

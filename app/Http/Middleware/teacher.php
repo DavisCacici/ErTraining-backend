@@ -27,7 +27,7 @@ class teacher
         }
         else{
 
-            if($user->role->name != 'teacher')
+            if($user->role->name != 'teacher' && $user->role->name != 'tutor')
             {
                 abort(403, 'Access denied');
             }

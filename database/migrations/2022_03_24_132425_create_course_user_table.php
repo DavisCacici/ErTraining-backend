@@ -15,8 +15,8 @@ class CreateCourseUserTable extends Migration
     {
         Schema::create('course_user', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('course_id')->constrained();
+            $table->bigInteger('user_id');
+            $table->bigInteger('course_id');
             $table->timestamps();
         });
     }
