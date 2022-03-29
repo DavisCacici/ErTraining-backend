@@ -10,10 +10,18 @@ class CourseController extends Controller
 {
     public function index(Request $request)
     {
-        // DB::table('users', 'a');
         $token = $request->bearerToken();
         $user = User::where('token', $token)->first();
-        $courses = User::find($user->id)->courses()->get();
-        return response()->json($courses, 200);
+        $courses = DB::table('course_user', 'cu')
+        ->join('courses', 'cu.course_id', '=', 'courses.id')
+        ->join('users', 'cu.user_id', '=', 'users.id')
+        ->select('courses.id', 'courses.name', 'courses.state')
+        ->where('users.id', '=', $user->id)->get();
+        $response = ['user' => $user, 'courses'=>$courses];
+        // foreach($courses as $course)
+        // {
+        //     $response[] = $course;
+        // }
+        return response()->json($response, 200);
     }
 }

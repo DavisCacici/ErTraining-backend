@@ -52,11 +52,6 @@ class UserController extends Controller
 
     }
 
-//     protected $user;
-//     public function __construct(){
-//         $this->middleware("auth:api",["except" => ["login","register"]]);
-//         $this->user = new User;
-//     }
 //     public function register(Request $request){
 //         $validator = Validator::make($request->all(),[
 //             'name' => 'required|string',

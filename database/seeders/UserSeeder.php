@@ -22,16 +22,28 @@ class UserSeeder extends Seeder
             'role_id'=> 1
         ]);
         DB::table('users')->insert([
-            'user_name' => Str::random(5),
-            'email' => Str::random(10).'@gmail.com',
+            'user_name' => 'Melania',
+            'email' => 'melaniatizzi@gmail.com',
+            'password' => Hash::make('password'),
+            'role_id'=> 2
+        ]);
+        DB::table('users')->insert([
+            'user_name' => 'Alex',
+            'email' => 'alexburgagni@gmail.com',
+            'password' => Hash::make('password'),
+            'role_id'=> 2
+        ]);
+        DB::table('users')->insert([
+            'user_name' => 'Leonardo',
+            'email' => 'leonardogaruti@gmail.com',
             'password' => Hash::make('password'),
             'role_id'=> 3
         ]);
         DB::table('users')->insert([
-            'user_name' => Str::random(5),
-            'email' => Str::random(10).'@gmail.com',
+            'user_name' => 'Marco',
+            'email' => 'marcovilla@gmail.com',
             'password' => Hash::make('password'),
-            'role_id'=> 2
+            'role_id'=> 3
         ]);
     }
 }
