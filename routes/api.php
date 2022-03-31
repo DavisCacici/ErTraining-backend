@@ -54,6 +54,10 @@ Route::middleware('checkAuth')->group(function(){
         $user = User::find(4);
         return $user;
     });
-    Route::get('/logout', [UserController::class, 'logout'])->name('logout.user');
+
+});
+
+Route::group(['middleware'=>'api'], function(){
+    Route::post('/logout', [UserController::class, 'logout'])->name('logout.user');
 });
 
