@@ -17,20 +17,16 @@ class student
     public function handle(Request $request, Closure $next)
     {
         $token = $request->bearerToken();
-        $user = User::where('token', $token)->with('role')->first();
-        // dd($user->role->name);
+        $tokenParts = explode(".", $token);  
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
 
-        if(!$user || !isset($token))
+        if($jwtPayload->role = 'student')
         {
-            abort(403, 'Access denied');
+            return $next($request);
         }
         else{
-
-            if($user->role->name != 'student')
-            {
-                abort(403, 'Access denied');
-            }
-            return $next($request);
+            abort(403, 'Access denied');
         }
     }
 }

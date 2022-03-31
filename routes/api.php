@@ -49,15 +49,12 @@ Route::middleware('student')->group(function(){
 });
 
 //in questo gruppo può fare le chiamate solo chi è autenticato
-Route::middleware('checkAuth')->group(function(){
+
+Route::middleware('api')->group(function(){
+    Route::post('/logout', [UserController::class, 'logout'])->name('logout.user');
     Route::get('/users', function(){
-        $user = User::find(4);
+        $user = User::find(1);
         return $user;
     });
-
-});
-
-Route::group(['middleware'=>'api'], function(){
-    Route::post('/logout', [UserController::class, 'logout'])->name('logout.user');
 });
 

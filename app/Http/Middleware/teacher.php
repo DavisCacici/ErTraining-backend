@@ -18,20 +18,18 @@ class teacher
     public function handle(Request $request, Closure $next)
     {
         $token = $request->bearerToken();
-        $user = User::where('token', $token)->with('role')->first();
-        // dd($user->role->name);
 
-        if(!$user || !isset($token))
+        $tokenParts = explode(".", $token);  
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+
+        if($jwtPayload->role = 'tutor' ||$jwtPayload->role = 'teacher')
         {
-            abort(403, 'Access denied');
-        }
-        else{
-
-            if($user->role->name != 'teacher' && $user->role->name != 'tutor')
-            {
-                abort(403, 'Access denied');
-            }
             return $next($request);
         }
+        else{
+            abort(403, 'Access denied');
+        }
+
     }
 }

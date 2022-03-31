@@ -8,9 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Hash;
-use Firebase\JWT\JWT;
+
 
 
 class User extends Authenticatable implements JWTSubject
@@ -51,21 +49,7 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    public function createToken()
-    {
-        // $this->token = Hash::make(Str::random(10).$this->email.Str::random(10));
-        // $this->save();
-        $token = array(
-            'data'=>array(
-                "id" => $this->id,
-                "user_name" => $this->user_name,
-                "email" => $this->email,
-                "role" => $this->role_id,
-            )
-        );
-        $this->token = JWT::encode($token, env('SECRET_KEY'), "HS256");
-        $this->save();
-    }
+    
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -76,18 +60,6 @@ class User extends Authenticatable implements JWTSubject
         return [];
     }
 
-
-    public function revoke()
-    {
-        $this->token = null;
-        $this->save();
-    }
-
-    // public function progres()
-    // {
-    //     return $this->hasMany(Progres::class);
-
-    // }
 
     public function courses()
     {
