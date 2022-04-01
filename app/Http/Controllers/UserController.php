@@ -3,10 +3,9 @@
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Validator;
+use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 class UserController extends Controller
 {
     public function login(Request $request)
@@ -42,6 +41,14 @@ class UserController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
+    }
+
+    public function store()
+    {
+        Mail::to('davis.cacici.studio@fitstic-edu.com')->cc('alexandro.burgagni.studio@fitstic-edu.com')->send(new WelcomeMail());
+        return new WelcomeMail();
+        // $data = ['message'=>'this is a test'];
+        // Mail::to('melania.tizzi.studio@fitstic-edu.it')->send(new TestEmail($data));
     }
 
 }

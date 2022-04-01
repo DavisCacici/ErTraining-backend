@@ -28,12 +28,15 @@ use Illuminate\Support\Facades\DB;
 //richiamando login return il token la chiamata la può fare chiunque
 Route::post('/login', [UserController::class, 'login'])->name('login.user');
 
+
+
 //in questo gruppo può fare le chiamate solo chi ha il ruole tutor
 Route::middleware('tutor')->group(function(){
     Route::post('/register', [UserController::class, 'register'])->name('register.user');
     Route::get('/check', function (){
         return response()->json("ci sono", 200);
     });
+    Route::post('/courseCreate', [CourseController::class, 'create']);
 
 });
 
@@ -48,13 +51,13 @@ Route::middleware('student')->group(function(){
     Route::get('/courseStudent', [CourseController::class, 'index']);
 });
 
-//in questo gruppo può fare le chiamate solo chi è autenticato
 
+//in questo gruppo può fare le chiamate solo chi è autenticato
 Route::middleware('api')->group(function(){
     Route::post('/logout', [UserController::class, 'logout'])->name('logout.user');
-    Route::get('/users', function(){
-        $user = User::find(1);
-        return $user;
-    });
+    // Route::get('/users', function(){
+    //     $user = User::find(1);
+    //     return $user;
+    // });
 });
 

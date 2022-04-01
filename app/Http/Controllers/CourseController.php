@@ -23,4 +23,16 @@ class CourseController extends Controller
 
         return response()->json($response, 200);
     }
+
+    public function create(Request $request)
+    {
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);  
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+
+        $request->file();
+    }
+
+
 }
