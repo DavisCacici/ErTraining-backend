@@ -25,9 +25,7 @@ class User extends Authenticatable implements JWTSubject
         'user_name',
         'email',
         'password',
-        'token',
         'role_id',
-        'last_request',
     ];
 
     /**
@@ -70,4 +68,5 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(Role::class);
     }
+
 }

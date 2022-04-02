@@ -23,25 +23,55 @@ class UserSeeder extends Seeder
         ]);
         DB::table('users')->insert([
             'user_name' => 'Melania',
-            'email' => 'melaniatizzi@gmail.com',
+            'email' => 'melania.tizzi.studio@fitstic-edu.com',
             'password' => Hash::make('password'),
             'role_id'=> 2
         ]);
         DB::table('users')->insert([
             'user_name' => 'Alex',
-            'email' => 'alexburgagni@gmail.com',
+            'email' => 'alexandro.burgagni.studio@fitstic-edu.com',
             'password' => Hash::make('password'),
             'role_id'=> 2
         ]);
         DB::table('users')->insert([
             'user_name' => 'Leonardo',
-            'email' => 'leonardogaruti@gmail.com',
+            'email' => 'leonardo.garuti.studio@fitstic-edu.com',
+            'password' => Hash::make('password'),
+            'role_id'=> 2
+        ]);
+        DB::table('users')->insert([
+            'user_name' => 'Marco',
+            'email' => 'marco.villa.studio@fitstic-edu.com',
             'password' => Hash::make('password'),
             'role_id'=> 3
         ]);
         DB::table('users')->insert([
             'user_name' => 'Marco',
-            'email' => 'marcovilla@gmail.com',
+            'email' => 'marco.scialla.studio@fitstic-edu.com',
+            'password' => Hash::make('password'),
+            'role_id'=> 3
+        ]);
+        DB::table('users')->insert([
+            'user_name' => 'Pietro',
+            'email' => 'pietro.foschi.studio@fitstic-edu.com',
+            'password' => Hash::make('password'),
+            'role_id'=> 3
+        ]);
+        DB::table('users')->insert([
+            'user_name' => 'Eugenia',
+            'email' => 'eugenia.facchini.studio@fitstic-edu.com',
+            'password' => Hash::make('password'),
+            'role_id'=> 3
+        ]);
+        DB::table('users')->insert([
+            'user_name' => 'Luca',
+            'email' => 'luca.arcangeli.studio@fitstic-edu.com',
+            'password' => Hash::make('password'),
+            'role_id'=> 3
+        ]);
+        DB::table('users')->insert([
+            'user_name' => 'Davide',
+            'email' => 'davide.guariento.studio@fitstic-edu.com',
             'password' => Hash::make('password'),
             'role_id'=> 3
         ]);

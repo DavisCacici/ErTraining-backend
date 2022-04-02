@@ -16,22 +16,14 @@ class ProgresSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('progres')->insert([
-            'step_id' => 1,
-            'state'=>'Finito',
-            'course_user_id' => 3,
-        ]);
-
-        DB::table('progres')->insert([
-            'step_id' => 2,
-            'state'=>'Finito',
-            'course_user_id' => 3,
-        ]);
-
-        DB::table('progres')->insert([
-            'step_id' => 3,
-            'state'=>'In corso',
-            'course_user_id' => 3,
-        ]);
+        for($i = 51; $i < 100; $i++)
+        {
+            DB::table('progres')->insert([
+                'step_id' => rand(1, 4),
+                'state'=>config('enums.state.progres.'.rand(1, 4)),
+                'course_user_id' => $i,
+            ]);
+        }
+        
     }
 }
