@@ -65,7 +65,7 @@ Route::middleware('tutor')->group(function(){
         //Route::put('editUser/{id}', [UserController::class, 'editUser']);
         Route::delete('/deleteUser/{id}', [UserController::class, 'deleteUser']);
     });
-    
+
     Route::prefix('courses')->group(function(){
         Route::get('/coursesList', [CourseController::class, 'coursesList']);
         Route::get('/getCourse/{id}', [CourseController::class, 'getCourse']);
@@ -76,7 +76,7 @@ Route::middleware('tutor')->group(function(){
     });
 
     //courses
-    
+
 });
 
 /**
@@ -85,8 +85,9 @@ Route::middleware('tutor')->group(function(){
  */
 //in questo gruppo può fare le chiamate solo chi ha il ruole teacher
 Route::middleware('teacher')->group(function(){
-    Route::get('/progress/{id}', [ProgressController::class, 'index']);
+    //Route::get('/progress/{id}', [ProgressController::class, 'index']);
     Route::get('/courseTeacher', [CourseController::class, 'index']);
+    Route::get('/getProgress/{id}', [ProgressController::class, 'getProgress']);
 });
 
 

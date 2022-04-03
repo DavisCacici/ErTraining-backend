@@ -55,11 +55,12 @@ class CourseController extends Controller
     }
 
     function getUsersCourse($id){
-        $getUsersCourse = DB::table('course_user')
+        $getUsersCourse = DB::table('progress')
         ->select('users.user_name', 'users.id', 'users.email', 'users.role_id')
-        ->join('courses', 'courses.id', '=', 'course_user.course_id')
-        ->join('users', 'users.id','=', 'course_user.user_id')
+        ->join('courses', 'courses.id', '=', 'progress.course_id')
+        ->join('users', 'users.id','=', 'progress.user_id')
         ->where('courses.id','=', $id)
+        ->where('step_id','=',1)
         ->where('users.role_id','!=','1') //per rimuovere i tutor
         ->get();
         return response()->json($getUsersCourse, 200);
@@ -85,7 +86,7 @@ class CourseController extends Controller
 
         if($course){
             $course->delete();
-            DB::delete('delete from course_user where course_id = ?', [$id]);
+            DB::delete('delete from progress where course_id = ?', [$id]);
 
             return response("Record deleted successfully");
         }
