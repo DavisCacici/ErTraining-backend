@@ -20,7 +20,8 @@ class UserController extends Controller
         {
             if(Hash::check($request->password, $user->password))
             {
-                $token = auth()->claims(['id'=> $user->id,
+                $token = auth()->claims([
+                'id'=> $user->id,
                 'name' => $user->user_name,
                 'email' => $user->email,
                 'role' => $user->role->name])->login($user);
@@ -82,7 +83,7 @@ class UserController extends Controller
         $tokenParts = explode(".", $token);
         $tokenPayload = base64_decode($tokenParts[1]);
         $jwtPayload = json_decode($tokenPayload);
-        $user = User::find($jwtPayload->user_id);
+        $user = User::find($jwtPayload->id);
         if($user){
             return response()->json($user, 200);
         }
@@ -96,7 +97,7 @@ class UserController extends Controller
         $tokenParts = explode(".", $token);
         $tokenPayload = base64_decode($tokenParts[1]);
         $jwtPayload = json_decode($tokenPayload);
-        $user = User::find($jwtPayload->user_id);
+        $user = User::find($jwtPayload->id);
         if($user){
             $user->password = Hash::make($request['password']);
             $user->save();
@@ -114,11 +115,11 @@ class UserController extends Controller
         $tokenParts = explode(".", $token);
         $tokenPayload = base64_decode($tokenParts[1]);
         $jwtPayload = json_decode($tokenPayload);
-        $user = User::find($jwtPayload->user_id);
+        $user = User::find($jwtPayload->id);
         if($user)
         {
             $user->email = $request['email'];
-            $user->name = $request['name'];
+            $user->name = $request['user_name'];
             $user->save();
             $response = ['message'=>'dati cambiati con successo', 'user'=>$user];
             return response()->json($response, 200);
@@ -128,20 +129,20 @@ class UserController extends Controller
 
     }
 
-    public function register(Request $request)
-    {
-        $file = $request->file('file');
-        if($file)
-        {
-            $filename = $file->getClientOriginalName();
-            $extension = $file->getClientOriginalExtension();
-            $tempPath = $file->getRealPath();
-            $location = 'uploads';
-            $file->move($location, $filename);
-            $filepath = public_path($location . "/" . $filename);
-            file($filepath);
-        }
-    }
+    // public function register(Request $request)
+    // {
+    //     $file = $request->file('file');
+    //     if($file)
+    //     {
+    //         $filename = $file->getClientOriginalName();
+    //         $extension = $file->getClientOriginalExtension();
+    //         $tempPath = $file->getRealPath();
+    //         $location = 'uploads';
+    //         $file->move($location, $filename);
+    //         $filepath = public_path($location . "/" . $filename);
+    //         file($filepath);
+    //     }
+    // }
 
     function usersList(){
         $usersList = DB::table('users')
@@ -209,9 +210,9 @@ class UserController extends Controller
 
     function editUser(Request $request, $id){
 
-        $data = $request->json()->all();
-        $user_name = $data['user_name'];
-        $email = $data['email'];
+        // $data = $request->json()->all();
+        // $user_name = $data['user_name'];
+        // $email = $data['email'];
         /*
         $user_name = User::where('user_name',$request['user_name']);
         $email = User::where('email',$request['email']);
@@ -225,7 +226,9 @@ class UserController extends Controller
             'role_id'=> $role_id
         ]);
         */
-        User::find($id)->update($request);
+        
+        $user = User::find($id);
+        $user->update($request);
 
         return response()->json($response, 200);
     }

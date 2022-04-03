@@ -19,21 +19,12 @@ class CourseController extends Controller
         ->join('courses', 'cu.course_id', '=', 'courses.id')
         ->join('users', 'cu.user_id', '=', 'users.id')
         ->select('courses.id', 'courses.name', 'courses.state', 'courses.description')
-        ->where('users.id', '=', $jwtPayload->user_id)->get();
+        ->where('users.id', '=', $jwtPayload->id)->get();
         $response = $courses;
 
         return response()->json($response, 200);
     }
 
-    public function create(Request $request)
-    {
-        $token = $request->bearerToken();
-        $tokenParts = explode(".", $token);
-        $tokenPayload = base64_decode($tokenParts[1]);
-        $jwtPayload = json_decode($tokenPayload);
-
-        $request->file();
-    }
     function coursesList(){
         $coursesList = DB::table('courses')
         ->select('courses.id', 'courses.name', 'courses.description')
