@@ -43,35 +43,40 @@ Route::post('/recovery', [UserController::class, 'recovery']);
  * lista corsi (tutti i corsi)
  * show course (vedere dati corso) ??? Quali tipi di dato?
  * show user in that course (passando l'id del corso)  (fatto)
- * create course ?
+ * create course  -- Da fare
  * delete course    (fatto)
- * edit course (editare dato corso)
- * edit user in that course (editare i partecipanti a quel corso)
+ * edit course (editare dato corso) -- Da fare
+ * edit user in that course (editare i partecipanti a quel corso) --Da fare
+ * Add user in a course -- Da fare
  *
  * vedere i progres di tutti gli studenti di quel corso
  */
 //in questo gruppo può fare le chiamate solo chi ha il ruole tutor
 Route::middleware('tutor')->group(function(){
-    //Route::post('/register', [UserController::class, 'register'])->name('register.user');
-    // Route::post('/courseCreate', [CourseController::class, 'create']);
 
     //users
-    Route::get('/usersList', [UserController::class, 'usersList']);
-    Route::get('/tutorsList', [UserController::class, 'tutorsList']);
-    Route::get('/teachersList', [UserController::class, 'teachersList']);
-    Route::get('/studentsList', [UserController::class, 'studentsList']);
-    Route::get('/getUser/{id}', [UserController::class, 'getUser']);
-    Route::post('/addUser', [UserController::class, 'addUser']);
-    //Route::put('editUser/{id}', [UserController::class, 'editUser']);
-    Route::delete('/deleteUser/{id}', [UserController::class, 'deleteUser']);
+    Route::prefix('users')->group(function(){
+        Route::get('/usersList', [UserController::class, 'usersList']);
+        Route::get('/tutorsList', [UserController::class, 'tutorsList']);
+        Route::get('/teachersList', [UserController::class, 'teachersList']);
+        Route::get('/studentsList', [UserController::class, 'studentsList']);
+        Route::get('/getUser/{id}', [UserController::class, 'getUser']);
+        Route::post('/addUser', [UserController::class, 'addUser']);
+        //Route::put('editUser/{id}', [UserController::class, 'editUser']);
+        Route::delete('/deleteUser/{id}', [UserController::class, 'deleteUser']);
+    });
+    
+    Route::prefix('courses')->group(function(){
+        Route::get('/coursesList', [CourseController::class, 'coursesList']);
+        Route::get('/getCourse/{id}', [CourseController::class, 'getCourse']);
+        Route::get('/getUsersCourse/{id}', [CourseController::class, 'getUsersCourse']);
+        Route::post('/addCourse', [CourseController::class, 'addCourse']);
+        //Route::put('editCourse/{id}', [CourseController::class, 'editCourse']);
+        Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse']);
+    });
 
     //courses
-    Route::get('/coursesList', [CourseController::class, 'coursesList']);
-    Route::get('/getCourse/{id}', [CourseController::class, 'getCourse']);
-    Route::get('/getUsersCourse/{id}', [CourseController::class, 'getUsersCourse']);
-    Route::post('/addCourse', [CourseController::class, 'addCourse']);
-    //Route::put('editCourse/{id}', [CourseController::class, 'editCourse']);
-    Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse']);
+    
 });
 
 /**
