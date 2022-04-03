@@ -31,27 +31,47 @@ Route::post('/recovery', [UserController::class, 'recovery']);
 
 /**
  * chiamate per tutor:
- * liste teacher, student, tutor (get)
- * show teacher, student, tutor (get con id nel url /{id})
+ *
+ *
+ *
+ * liste teacher, student, tutor (get) (fatto)
+ * show teacher, student, tutor (get con id nel url /{id}) (fatto)
  * edit teacher, student, tutor tranne se stesso (put con id nel url /{id})
- * delete teacher, student, tutor tranne se stesso (delete con id nel url /{id})
- * create teacher, student, tutor (post)(quando viene creato inviare una email)
- * 
+ * delete teacher, student, tutor tranne se stesso (delete con id nel url /{id} ) (fatto)
+ * create teacher, student, tutor (post)(quando viene creato inviare una email) (fatto, compresa l'email)
+ *
  * lista corsi (tutti i corsi)
- * show course (vedere dati corso)
- * show user in that course (passando l'id del corso)
+ * show course (vedere dati corso) ??? Quali tipi di dato?
+ * show user in that course (passando l'id del corso)  (fatto)
  * create course ?
- * delete course
+ * delete course    (fatto)
  * edit course (editare dato corso)
  * edit user in that course (editare i partecipanti a quel corso)
- * 
+ *
  * vedere i progres di tutti gli studenti di quel corso
  */
 //in questo gruppo può fare le chiamate solo chi ha il ruole tutor
 Route::middleware('tutor')->group(function(){
-    // Route::post('/register', [UserController::class, 'register'])->name('register.user');
+    //Route::post('/register', [UserController::class, 'register'])->name('register.user');
     // Route::post('/courseCreate', [CourseController::class, 'create']);
 
+    //users
+    Route::get('/usersList', [UserController::class, 'usersList']);
+    Route::get('/tutorsList', [UserController::class, 'tutorsList']);
+    Route::get('/teachersList', [UserController::class, 'teachersList']);
+    Route::get('/studentsList', [UserController::class, 'studentsList']);
+    Route::get('/getUser/{id}', [UserController::class, 'getUser']);
+    Route::post('/addUser', [UserController::class, 'addUser']);
+    //Route::put('editUser/{id}', [UserController::class, 'editUser']);
+    Route::delete('/deleteUser/{id}', [UserController::class, 'deleteUser']);
+
+    //courses
+    Route::get('/coursesList', [CourseController::class, 'coursesList']);
+    Route::get('/getCourse/{id}', [CourseController::class, 'getCourse']);
+    Route::get('/getUsersCourse/{id}', [CourseController::class, 'getUsersCourse']);
+    Route::post('/addCourse', [CourseController::class, 'addCourse']);
+    //Route::put('editCourse/{id}', [CourseController::class, 'editCourse']);
+    Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse']);
 });
 
 /**

@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
             'user_name' => 'Leonardo',
             'email' => 'leonardo.garuti.studio@fitstic-edu.com',
             'password' => Hash::make('password'),
-            'role_id'=> 2
+            'role_id'=> 1
         ]);
         DB::table('users')->insert([
             'user_name' => 'Marco',

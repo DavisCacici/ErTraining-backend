@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Mail\Recovery;
+use App\Mail\Register;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Mail\WelcomeMail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 class UserController extends Controller
 {
     public function login(Request $request)
@@ -20,7 +22,7 @@ class UserController extends Controller
             {
                 $token = auth()->claims(['id'=> $user->id,
                 'name' => $user->user_name,
-                'email' => $user->email, 
+                'email' => $user->email,
                 'role' => $user->role->name])->login($user);
                 return $this->respondWithToken($token);
             }else{
@@ -77,7 +79,7 @@ class UserController extends Controller
     public function profile(Request $request)
     {
         $token = $request->bearerToken();
-        $tokenParts = explode(".", $token);  
+        $tokenParts = explode(".", $token);
         $tokenPayload = base64_decode($tokenParts[1]);
         $jwtPayload = json_decode($tokenPayload);
         $user = User::find($jwtPayload->user_id);
@@ -91,7 +93,7 @@ class UserController extends Controller
     public function resetPassword(Request $request)
     {
         $token = $request->bearerToken();
-        $tokenParts = explode(".", $token);  
+        $tokenParts = explode(".", $token);
         $tokenPayload = base64_decode($tokenParts[1]);
         $jwtPayload = json_decode($tokenPayload);
         $user = User::find($jwtPayload->user_id);
@@ -109,7 +111,7 @@ class UserController extends Controller
     public function changeData(Request $request)
     {
         $token = $request->bearerToken();
-        $tokenParts = explode(".", $token);  
+        $tokenParts = explode(".", $token);
         $tokenPayload = base64_decode($tokenParts[1]);
         $jwtPayload = json_decode($tokenPayload);
         $user = User::find($jwtPayload->user_id);
@@ -139,6 +141,106 @@ class UserController extends Controller
             $filepath = public_path($location . "/" . $filename);
             file($filepath);
         }
+    }
+
+    function usersList(){
+        $usersList = DB::table('users')
+        ->select('users.id', 'users.user_name', 'users.email')->get();
+        // dd($progres);
+        return response()->json($usersList, 200);
+    }
+
+
+    function tutorsList(){
+        $tutorsList = DB::table('users')
+        ->select('users.id', 'users.user_name', 'users.email')
+        ->where('users.role_id', '=', '1')->get();
+        // dd($progres);
+        return response()->json($tutorsList, 200);
+    }
+
+    function teachersList(){
+        $teachersList = DB::table('users')
+        ->select('users.id', 'users.user_name', 'users.email')
+        ->where('users.role_id', '=', '2')->get();
+        // dd($progres);
+        return response()->json($teachersList, 200);
+    }
+
+    function studentsList(){
+        $studentsList = DB::table('users')
+        ->select('users.id', 'users.user_name', 'users.email')
+        ->where('users.role_id', '=', '3')->get();
+        // dd($progres);
+        return response()->json($studentsList, 200);
+    }
+
+    function getUser($id){
+        $getUser = DB::table('users')
+        ->select('users.id', 'users.user_name', 'users.email', 'users.role_id')
+        ->where('users.id', '=', $id)->get();
+        // dd($progres);
+        return response()->json($getUser, 200);
+    }
+
+    function addUser(Request $request){
+        $user_name = $request['user_name'];
+        $email = $request['email'];
+        $password = $request['password'];
+        $role_id = $request['role_id'];
+        /*$user_name = User::where('user_name',$request['user_name']);
+        $email = User::where('email',$request['email']);
+        $password = User::where('password',$request['password']);
+        $role_id = User::where('role_id',$request['role_id']);
+        */
+        DB::table('users')
+        ->insert([
+            'user_name' => $user_name,
+            'email' => $email,
+            'password' => Hash::make($password),
+            'role_id'=> $role_id
+        ]);
+        Mail::to($email)->send(new Register($email, $password));
+
+        $response = ['message' => 'ti è stata inviata una email con le credenziali'];
+        return response()->json($response, 200);
+    }
+
+
+    function editUser(Request $request, $id){
+
+        $data = $request->json()->all();
+        $user_name = $data['user_name'];
+        $email = $data['email'];
+        /*
+        $user_name = User::where('user_name',$request['user_name']);
+        $email = User::where('email',$request['email']);
+        $password = User::where('password',$request['password']);
+        $role_id = User::where('role_id',$request['role_id']);
+        */
+        /*DB::table('users')
+        ->update([
+            'user_name' => $user_name,
+            'email' => $email,
+            'role_id'=> $role_id
+        ]);
+        */
+        User::find($id)->update($request);
+
+        return response()->json($response, 200);
+    }
+
+
+
+    function deleteUser($id){
+
+        $user = User::find($id);
+        if ($user){
+            $user->delete();
+            DB::delete('delete from course_user where user_id = ?', [$id]);
+            return response("Record deleted successfully");
+        }
+        return response("Utente non presente", 404);
     }
 
 }
