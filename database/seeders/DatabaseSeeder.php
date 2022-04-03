@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Progres;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -24,7 +23,7 @@ class DatabaseSeeder extends Seeder
             StepSeeder::class,
             CourseSeeder::class,
             CourseUserSeeder::class,
-            ProgresSeeder::class,
+            ProgressSeeder::class,
         ]);
 
     }

@@ -85,7 +85,7 @@ Route::middleware('tutor')->group(function(){
  */
 //in questo gruppo può fare le chiamate solo chi ha il ruole teacher
 Route::middleware('teacher')->group(function(){
-    Route::get('/progres/{id}', [ProgressController::class, 'index']);
+    Route::get('/progress/{id}', [ProgressController::class, 'index']);
     Route::get('/courseTeacher', [CourseController::class, 'index']);
 });
 

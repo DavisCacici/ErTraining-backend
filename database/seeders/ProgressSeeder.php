@@ -4,10 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
-class ProgresSeeder extends Seeder
+class ProgressSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -18,12 +16,11 @@ class ProgresSeeder extends Seeder
     {
         for($i = 51; $i < 100; $i++)
         {
-            DB::table('progres')->insert([
+            DB::table('progress')->insert([
                 'step_id' => rand(1, 4),
                 'state'=>config('enums.state.progres.'.rand(1, 4)),
                 'course_user_id' => $i,
             ]);
         }
-        
     }
 }
