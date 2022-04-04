@@ -22,7 +22,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             StepSeeder::class,
             CourseSeeder::class,
-            CourseUserSeeder::class,
             ProgressSeeder::class,
         ]);
 

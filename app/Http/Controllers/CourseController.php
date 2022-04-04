@@ -80,6 +80,29 @@ class CourseController extends Controller
         return response()->json("Corso creato con successo", 200);
     }
 
+    function editCourse(Request $request,$id){
+        $changeValue = false;
+        $name = $request['name'];
+        $state = $request['state'];
+        $description = $request['description'];
+        if($name != null){
+            DB::update("update courses set name = \"$name\" where id = $id");
+            $changeValue = true;
+        }
+        if($state != null){
+            DB::update("update courses set state = \"$state\" where id = $id");
+            $changeValue = true;
+        }
+        if($request != null){
+            DB::update("update courses set description = \"$description\" where id = $id");
+            $changeValue = true;
+        }
+        if($changeValue == true){
+            return response("I valori sono stati cambiati correttamente");
+        }
+        return response("Nessun valore è stato cambiato");
+
+    }
 
     function deleteCourse($id){
         $course = Course::find($id);
