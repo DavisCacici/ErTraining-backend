@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Models\Course;
+use App\Models\Progress;
 
 class CourseController extends Controller
 {
@@ -58,7 +59,7 @@ class CourseController extends Controller
     }
 
     function addUsersCourse(Request $request, $course_id){
-        $course = Course::find($id);
+        $course = Course::find($course_id);
         $count_student = 0;
         $count_teacher = 0;
         if($course)
@@ -71,14 +72,14 @@ class CourseController extends Controller
                         'step_id' => 1,
                         'state' => config('enums.state.progres.1'),
                         'user_id' => $userid,
-                        'course_id' => $id
+                        'course_id' => $course_id
                     ]);
                     $count_student += 1;
                 }
                 if($user->role_id == 1 || $user->role_id == 2){
                     Progress::create([
                         'user_id' => $userid,
-                        'course_id' => $id
+                        'course_id' => $course_id
                     ]);
                     $count_teacher += 1;
                 }
@@ -91,7 +92,7 @@ class CourseController extends Controller
         $response = ['message' => "non è stata trovata l'azienda"];
         return response()->json($response, 404);
     }
-    }
+
 
     function addCourse(Request $request){
         $name = $request['name'];

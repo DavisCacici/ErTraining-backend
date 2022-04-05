@@ -6,7 +6,7 @@ use App\Mail\Recovery;
 use App\Mail\Register;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Mail\WelcomeMail;
+use App\Models\Progress;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -51,14 +51,6 @@ class UserController extends Controller
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
     }
-
-    // public function store()
-    // {
-    //     Mail::to('davis.cacici.studio@fitstic-edu.com')->cc('alexandro.burgagni.studio@fitstic-edu.com')->send(new WelcomeMail());
-    //     return new WelcomeMail();
-    //     // $data = ['message'=>'this is a test'];
-    //     // Mail::to('melania.tizzi.studio@fitstic-edu.it')->send(new TestEmail($data));
-    // }
 
     public function recovery(Request $request)
     {
@@ -129,21 +121,6 @@ class UserController extends Controller
 
     }
 
-    // public function register(Request $request)
-    // {
-    //     $file = $request->file('file');
-    //     if($file)
-    //     {
-    //         $filename = $file->getClientOriginalName();
-    //         $extension = $file->getClientOriginalExtension();
-    //         $tempPath = $file->getRealPath();
-    //         $location = 'uploads';
-    //         $file->move($location, $filename);
-    //         $filepath = public_path($location . "/" . $filename);
-    //         file($filepath);
-    //     }
-    // }
-
     function usersList(){
         $usersList = DB::table('users')
         ->select('users.id', 'users.user_name', 'users.email')->get();
@@ -189,13 +166,7 @@ class UserController extends Controller
         $email = $request['email'];
         $password = $request['password'];
         $role_id = $request['role_id'];
-        /*$user_name = User::where('user_name',$request['user_name']);
-        $email = User::where('email',$request['email']);
-        $password = User::where('password',$request['password']);
-        $role_id = User::where('role_id',$request['role_id']);
-        */
-        DB::table('users')
-        ->insert([
+        User::create([
             'user_name' => $user_name,
             'email' => $email,
             'password' => Hash::make($password),
@@ -210,16 +181,19 @@ class UserController extends Controller
 
     function editUser(Request $request, $id){
         $changeValue = false;
+        $user = User::find($id);
         $user_name = $request['user_name'];
         $email = $request['email'];
         if($user_name != null){
-            DB::update("update users set user_name = \"$user_name\" where id = $id");
+            $user->user_name = $user_name;
             $changeValue = true;
         }
         if($email != null){
-            DB::update("update users set email = \"$email\" where id = $id");
+            $user->email = $email;
             $changeValue = true;
         }
+
+        $user->save();
         if($changeValue == true){
             return response("I valori sono stati cambiati correttamente");
         }
@@ -234,7 +208,9 @@ class UserController extends Controller
         $user = User::find($id);
         if ($user){
             $user->delete();
-            DB::delete('delete from progress where user_id = ?', [$id]);
+            $progress = Progress::where('user_id',$id)->get();
+            $progress->delete();
+            // DB::delete('delete from progress where user_id = ?', [$id]);
             return response("Record deleted successfully");
         }
         return response("Utente non presente", 404);

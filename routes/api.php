@@ -56,13 +56,21 @@ Route::middleware('tutor')->group(function(){
 
     //users
     Route::prefix('users')->group(function(){
+        /**Ritorna l'intera lista degli utenti presenti a database */
         Route::get('/usersList', [UserController::class, 'usersList']);
+        /**Ritorna la lista dei tutor presenti a database */
         Route::get('/tutorsList', [UserController::class, 'tutorsList']);
+        /**Ritorna la lista dei teacher presenti a database */
         Route::get('/teachersList', [UserController::class, 'teachersList']);
+        /**Ritorna la lista dei student presenti a database */
         Route::get('/studentsList', [UserController::class, 'studentsList']);
+        /**Ritorna i dettagli di un utente specifico passando semplicemente il suo ID */
         Route::get('/getUser/{id}', [UserController::class, 'getUser']);
+        /**Chiamata che serve per creare un nuovo utente passare al suo interno user_name, password, email e role_id */
         Route::post('/addUser', [UserController::class, 'addUser']);
+        /**Chiamata che serve per modificare un nuovo utente passando l'id dell'utente al suo interno user_name, password, email e role_id */
         Route::put('editUser/{id}', [UserController::class, 'editUser']);
+        /**Chiamata per eliminare */
         Route::delete('/deleteUser/{id}', [UserController::class, 'deleteUser']);
     });
     Route::prefix('courses')->group(function(){

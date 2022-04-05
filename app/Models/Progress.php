@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Progress extends Model
 {
     use HasFactory;
+
+    protected $fillable = ['user_id', 'course_id', 'step_id', 'state'];
 }
