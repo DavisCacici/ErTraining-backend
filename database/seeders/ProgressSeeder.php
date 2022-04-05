@@ -49,10 +49,60 @@ class ProgressSeeder extends Seeder
 
         }
 
-        for($x=0; $x<=70;$x++){
-            $user= rand(5,10);
-            $course = rand(1,20);
-            DB::delete("delete from progress where user_id = $user  AND course_id = $course");
-        }
+        // for($x=0; $x<=70;$x++){
+        //     $user= rand(5,10);
+        //     $course = rand(1,20);
+        //     DB::delete("delete from progress where user_id = $user  AND course_id = $course");
+        // }
+
+        // for($i = 1; $i <21; $i++)
+        // {
+        //     DB::table('progress')->insert([
+        //         'user_id' => 1,
+        //         'course_id' => $i,
+        //     ]);
+        // }
+
+
+        // for($i = 1; $i <11; $i++)
+        // {
+        //     DB::table('progress')->insert([
+        //         'user_id' => 2,
+        //         'course_id' => $i,
+        //     ]);
+        // }
+
+        // for($i = 11; $i <21; $i++)
+        // {
+        //     DB::table('progress')->insert([
+        //         'user_id' => 3,
+        //         'course_id' => $i,
+        //     ]);
+        // }
+
+        // for($i = 5; $i <16; $i++)
+        // {
+        //     DB::table('progress')->insert([
+        //         'step_id' => 1,
+        //         'state' => config('enums.state.progres.1'),
+        //         'user_id' => 4,
+        //         'course_id' => $i,
+        //     ]);
+        // }
+
+        // for($i = 1; $i <21; $i++)
+        // {
+
+        //     for($j = 5; $j <11; $j++)
+        //     {
+        //         DB::table('progress')->insert([
+        //             'step_id' => 1,
+        //             'state' => config('enums.state.progres.1'),
+        //             'user_id' => $j,
+        //             'course_id' => $i,
+        //         ]);
+        //     }
+
+        // }
     }
 }
