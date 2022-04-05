@@ -86,11 +86,6 @@ class CourseController extends Controller
             return response("riga dello student creata");
         }
         return response("an error occurred");
-//prende in ingresso lo user_id ed il course_id,
-//se l'utente ha un role_id!=3
-//crea una riga
-//con lo state=null e lo step_id=null
-//altrimenti crea una riga con lo step_id == 1 e lo state = non abilitato
     }
 
     function addCourse(Request $request){
