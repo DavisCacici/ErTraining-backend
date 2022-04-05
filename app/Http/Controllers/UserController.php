@@ -240,7 +240,7 @@ class UserController extends Controller
         $user = User::find($id);
         if ($user){
             $user->delete();
-            DB::delete('delete from course_user where user_id = ?', [$id]);
+            DB::delete('delete from progress where user_id = ?', [$id]);
             return response("Record deleted successfully");
         }
         return response("Utente non presente", 404);

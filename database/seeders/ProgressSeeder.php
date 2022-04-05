@@ -14,13 +14,45 @@ class ProgressSeeder extends Seeder
      */
     public function run()
     {
-        for($i = 51; $i < 100; $i++)
+        $state = 1;
+        for($i = 5; $i <= 10; $i++)
         {
-            DB::table('progress')->insert([
-                'step_id' => rand(1, 4),
-                'state'=>config('enums.state.progres.'.rand(1, 4)),
-                'course_user_id' => $i,
-            ]);
+            for($j=1; $j <= 20; $j++){
+                for($x=1; $x<=4; $x++){
+                    if($x==1){
+                        DB::table('progress')->insert([
+                            'step_id' => $x,
+                            'user_id' => $i,
+                            'course_id' => $j,
+                            'state'=>config('enums.state.progres.'.(4)),
+                        ]);
+                    }
+                    else if ($x==2){
+                        DB::table('progress')->insert([
+                            'step_id' => $x,
+                            'user_id' => $i,
+                            'course_id' => $j,
+                            'state'=>config('enums.state.progres.'.(3)),
+                        ]);
+                    }
+                    else {
+                        DB::table('progress')->insert([
+                            'step_id' => $x,
+                            'user_id' => $i,
+                            'course_id' => $j,
+                            'state'=>config('enums.state.progres.'.(1)),
+                        ]);
+                    }
+
+                }
+            }
+
+        }
+
+        for($x=0; $x<=70;$x++){
+            $user= rand(5,10);
+            $course = rand(1,20);
+            DB::delete("delete from progress where user_id = $user  AND course_id = $course");
         }
     }
 }

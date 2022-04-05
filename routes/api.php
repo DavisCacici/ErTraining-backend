@@ -41,7 +41,7 @@ Route::post('/recovery', [UserController::class, 'recovery']);
  * show user in that course (passando l'id del corso)  (fatto)
  * delete course    (fatto)
  * create course  (fatto)
- * 
+ *
  * Da fare
  * show course (vedere dati corso) ??? Quali tipi di dato? --Da fare
  * edit teacher, student, tutor tranne se stesso (put con id nel url /{id})
@@ -65,8 +65,6 @@ Route::middleware('tutor')->group(function(){
         //Route::put('editUser/{id}', [UserController::class, 'editUser']);
         Route::delete('/deleteUser/{id}', [UserController::class, 'deleteUser']);
     });
-    
-    //courses
     Route::prefix('courses')->group(function(){
         Route::get('/coursesList', [CourseController::class, 'coursesList']);
         Route::get('/getCourse/{id}', [CourseController::class, 'getCourse']);
@@ -76,8 +74,8 @@ Route::middleware('tutor')->group(function(){
         Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse']);
     });
 
-    
-    
+    //courses
+
 });
 
 
@@ -89,14 +87,15 @@ Route::middleware('tutor')->group(function(){
 
 /**
  * Chiamate per il teacher:
- * 
+ *
  * vedere i progress di tutti gli studenti di quel corso
  * abilitare step nella tabella progress
  */
 //in questo gruppo può fare le chiamate solo chi ha il ruole teacher
 Route::middleware('teacher')->group(function(){
-    Route::get('/progress/{id}', [ProgressController::class, 'index']);
+    //Route::get('/progress/{id}', [ProgressController::class, 'index']);
     Route::get('/courseTeacher', [CourseController::class, 'index']);
+    Route::get('/getProgress/{id}', [ProgressController::class, 'getProgress']);
 });
 
 

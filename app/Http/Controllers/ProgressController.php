@@ -21,4 +21,15 @@ class ProgressController extends Controller
         // dd($progres);
         return response()->json($progres, 200);
     }
+
+    function getProgress($id){
+        $getProgress = DB::table('progress')
+        ->select('progress.step_id','progress.state','users.user_name', 'users.id', 'users.email', 'users.role_id')
+        ->join('courses', 'courses.id', '=', 'progress.course_id')
+        ->join('users', 'users.id','=', 'progress.user_id')
+        ->where('courses.id','=', $id)
+        ->where('users.role_id','!=','1') //per rimuovere i tutor
+        ->get();
+        return response()->json($getProgress, 200);
+    }
 }
