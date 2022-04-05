@@ -58,34 +58,39 @@ class CourseController extends Controller
     }
 
     function addUsersCourse(Request $request, $course_id){
-        $user_id = $request['user_id'];
-        $getUserRole = DB::table('users')
-        ->select('role_id')
-        ->where('users.id','=',$user_id)->get();
+        $course = Course::find($id);
+        $count_student = 0;
+        $count_teacher = 0;
+        if($course)
+        {
+            foreach($request['users'] as $userid)
+            {
+                $user = User::find($userid);
+                if($user->role_id == 3){
+                    Progress::create([
+                        'step_id' => 1,
+                        'state' => config('enums.state.progres.1'),
+                        'user_id' => $userid,
+                        'course_id' => $id
+                    ]);
+                    $count_student += 1;
+                }
+                if($user->role_id == 1 || $user->role_id == 2){
+                    Progress::create([
+                        'user_id' => $userid,
+                        'course_id' => $id
+                    ]);
+                    $count_teacher += 1;
+                }
 
-        $getUserRole = json_decode($getUserRole, true);
-        $role_id = $getUserRole[0]{'role_id'};
-        if($role_id == 1 or $role_id == 2){
-            DB::table('progress')
-            ->insert([
-            'step_id' => null,
-            'user_id' => $user_id,
-            'course_id'=> $course_id,
-            'state'=>null,
-                ]);
-            return response("riga del tutor o teacher creata");
+            }
+            $response = ['message' => "sono stati inseriti $count_student studenti e $count_teacher docenti o tutor"];
+            return response()->json($response, 200);
         }
-        if($role_id == 3){
-            DB::table('progress')
-            ->insert([
-            'step_id' => 1,
-            'user_id' => $user_id,
-            'course_id'=> $course_id,
-            'state'=> config('enums.state.progres.1'),
-                ]);
-            return response("riga dello student creata");
-        }
-        return response("an error occurred");
+
+        $response = ['message' => "non è stata trovata l'azienda"];
+        return response()->json($response, 404);
+    }
     }
 
     function addCourse(Request $request){
