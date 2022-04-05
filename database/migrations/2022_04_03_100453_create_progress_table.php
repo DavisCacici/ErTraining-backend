@@ -15,10 +15,10 @@ class CreateProgressTable extends Migration
     {
         Schema::create('progress', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('step_id');
+            $table->bigInteger('step_id')->nullable();
             $table->bigInteger('user_id');
             $table->bigInteger('course_id');
-            $table->string('state');
+            $table->string('state')->nullable();
             $table->timestamps();
         });
     }
