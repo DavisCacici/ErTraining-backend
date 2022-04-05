@@ -57,6 +57,42 @@ class CourseController extends Controller
         return response()->json($getUsersCourse, 200);
     }
 
+    function addUsersCourse(Request $request, $course_id){
+        $user_id = $request['user_id'];
+        $getUserRole = DB::table('users')
+        ->select('role_id')
+        ->where('users.id','=',$user_id)->get();
+
+        $getUserRole = json_decode($getUserRole, true);
+        $role_id = $getUserRole[0]{'role_id'};
+        if($role_id == 1 or $role_id == 2){
+            DB::table('progress')
+            ->insert([
+            'step_id' => null,
+            'user_id' => $user_id,
+            'course_id'=> $course_id,
+            'state'=>null,
+                ]);
+            return response("riga del tutor o teacher creata");
+        }
+        if($role_id == 3){
+            DB::table('progress')
+            ->insert([
+            'step_id' => 1,
+            'user_id' => $user_id,
+            'course_id'=> $course_id,
+            'state'=> config('enums.state.progres.1'),
+                ]);
+            return response("riga dello student creata");
+        }
+        return response("an error occurred");
+//prende in ingresso lo user_id ed il course_id,
+//se l'utente ha un role_id!=3
+//crea una riga
+//con lo state=null e lo step_id=null
+//altrimenti crea una riga con lo step_id == 1 e lo state = non abilitato
+    }
+
     function addCourse(Request $request){
         $name = $request['name'];
         $state = $request['state'];
@@ -71,6 +107,29 @@ class CourseController extends Controller
         return response()->json("Corso creato con successo", 200);
     }
 
+    function editCourse(Request $request,$id){
+        $changeValue = false;
+        $name = $request['name'];
+        $state = $request['state'];
+        $description = $request['description'];
+        if($name != null){
+            DB::update("update courses set name = \"$name\" where id = $id");
+            $changeValue = true;
+        }
+        if($state != null){
+            DB::update("update courses set state = \"$state\" where id = $id");
+            $changeValue = true;
+        }
+        if($request != null){
+            DB::update("update courses set description = \"$description\" where id = $id");
+            $changeValue = true;
+        }
+        if($changeValue == true){
+            return response("I valori sono stati cambiati correttamente");
+        }
+        return response("Nessun valore è stato cambiato");
+
+    }
 
     function deleteCourse($id){
         $course = Course::find($id);

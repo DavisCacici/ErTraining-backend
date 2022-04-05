@@ -21,8 +21,8 @@ class Course extends Model
     // }
     public function users()
     {
-        return $this->belongsToMany(User::class, 'course_user', 'user_id', 'course_id');
- 
+        return $this->belongsToMany(User::class, 'progress', 'user_id', 'course_id');
+
     }
 
 }

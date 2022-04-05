@@ -62,16 +62,17 @@ Route::middleware('tutor')->group(function(){
         Route::get('/studentsList', [UserController::class, 'studentsList']);
         Route::get('/getUser/{id}', [UserController::class, 'getUser']);
         Route::post('/addUser', [UserController::class, 'addUser']);
-        //Route::put('editUser/{id}', [UserController::class, 'editUser']);
+        Route::put('editUser/{id}', [UserController::class, 'editUser']);
         Route::delete('/deleteUser/{id}', [UserController::class, 'deleteUser']);
     });
     Route::prefix('courses')->group(function(){
         Route::get('/coursesList', [CourseController::class, 'coursesList']);
         Route::get('/getCourse/{id}', [CourseController::class, 'getCourse']);
-        Route::get('/getUsersCourse/{id}', [CourseController::class, 'getUsersCourse']);
         Route::post('/addCourse', [CourseController::class, 'addCourse']);
-        //Route::put('editCourse/{id}', [CourseController::class, 'editCourse']);
+        Route::put('editCourse/{id}', [CourseController::class, 'editCourse']);
         Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse']);
+        Route::get('/getUsersCourse/{id}', [CourseController::class, 'getUsersCourse']);
+        Route::match(['get', 'post'],'/addUsersCourse/{course_id}', [CourseController::class, 'addUsersCourse']);
     });
 
     //courses
@@ -96,6 +97,7 @@ Route::middleware('teacher')->group(function(){
     //Route::get('/progress/{id}', [ProgressController::class, 'index']);
     Route::get('/courseTeacher', [CourseController::class, 'index']);
     Route::get('/getProgress/{id}', [ProgressController::class, 'getProgress']);
+    Route::match(['put', 'get', 'post'],'/setStateProgress/{id}', [ProgressController::class, 'setStateProgress']);
 });
 
 
@@ -106,6 +108,7 @@ Route::middleware('teacher')->group(function(){
 //in questo gruppo può fare le chiamate solo chi ha il ruole student
 Route::middleware('student')->group(function(){
     Route::get('/courseStudent', [CourseController::class, 'index']);
+    Route::match(['put', 'get', 'post'],'/changeStateProgress/{id}', [ProgressController::class, 'changeStateProgress']);
 });
 
 

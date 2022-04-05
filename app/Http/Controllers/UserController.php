@@ -209,28 +209,22 @@ class UserController extends Controller
 
 
     function editUser(Request $request, $id){
+        $changeValue = false;
+        $user_name = $request['user_name'];
+        $email = $request['email'];
+        if($user_name != null){
+            DB::update("update users set user_name = \"$user_name\" where id = $id");
+            $changeValue = true;
+        }
+        if($email != null){
+            DB::update("update users set email = \"$email\" where id = $id");
+            $changeValue = true;
+        }
+        if($changeValue == true){
+            return response("I valori sono stati cambiati correttamente");
+        }
+        return response("Nessun valore è stato cambiato");
 
-        // $data = $request->json()->all();
-        // $user_name = $data['user_name'];
-        // $email = $data['email'];
-        /*
-        $user_name = User::where('user_name',$request['user_name']);
-        $email = User::where('email',$request['email']);
-        $password = User::where('password',$request['password']);
-        $role_id = User::where('role_id',$request['role_id']);
-        */
-        /*DB::table('users')
-        ->update([
-            'user_name' => $user_name,
-            'email' => $email,
-            'role_id'=> $role_id
-        ]);
-        */
-        
-        $user = User::find($id);
-        $user->update($request);
-
-        return response()->json($response, 200);
     }
 
 

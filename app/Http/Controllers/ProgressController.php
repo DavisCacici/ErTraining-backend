@@ -32,4 +32,68 @@ class ProgressController extends Controller
         ->get();
         return response()->json($getProgress, 200);
     }
+
+    function setStateProgress(Request $request, $id){
+        $state = $request['state'];
+        if($state!=config('enums.state.progres.1') && $state!=config('enums.state.progres.2')){
+            return response("Scelta non concessa");
+        }
+        DB::update("update progress set state = \"$state\" where id = $id");
+        if($state=="Finito"){
+            $value = DB::table('progress')
+            ->select('progress.step_id', 'progress.user_id','progress.course_id')
+            ->where('progress.id', '=', $id)->get();
+            $value = json_decode($value, true);
+            $step_id = $value[0]{'step_id'};
+            if($step_id == 4){
+                return response("Non ci sono più giochi");
+            }
+            $step_id = $step_id + 1;
+            $user_id = $value[0]{'user_id'};
+            $course_id = $value[0]{'course_id'};
+
+            DB::table('progress')
+            ->insert([
+            'step_id' => $step_id,
+            'user_id' => $user_id,
+            'course_id'=> $course_id,
+            'state'=>config('enums.state.progres.1'),
+                ]);
+
+            return response("Stato aggiornato a Finito, creato nuovo stato di progresso");
+            }
+        return response("Stato aggiornato", 200);
+    }
+
+    function changeStateProgress(Request $request, $id){
+        $state = $request['state'];
+        if($state!=config('enums.state.progres.3') && $state!=config('enums.state.progres.4')){
+            return response("Nono ha funzionato $state");
+        }
+        DB::update("update progress set state = \"$state\" where id = $id");
+        if($state=="Finito"){
+            $value = DB::table('progress')
+            ->select('progress.step_id', 'progress.user_id','progress.course_id')
+            ->where('progress.id', '=', $id)->get();
+            $value = json_decode($value, true);
+            $step_id = $value[0]{'step_id'};
+            if($step_id == 4){
+                return response("Non ci sono più giochi");
+            }
+            $step_id = $step_id + 1;
+            $user_id = $value[0]{'user_id'};
+            $course_id = $value[0]{'course_id'};
+
+            DB::table('progress')
+            ->insert([
+            'step_id' => $step_id,
+            'user_id' => $user_id,
+            'course_id'=> $course_id,
+            'state'=>config('enums.state.progres.1'),
+                ]);
+
+            return response("Stato aggiornato a Finito, creato nuovo stato di progresso");
+            }
+        return response("Stato aggiornato", 200);
+    }
 }
