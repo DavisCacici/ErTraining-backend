@@ -102,7 +102,7 @@ class CourseController extends Controller
     *   summary="Ritorna tutte le informazioni degli utenti iscritti ad un corso",
     *   description="Get all the users of a course",
     *   operationId="getUsersCourse",
-    *   tags={"UsersCourses"},
+    *   tags={"Progress"},
     *   security={{ "apiAuth": {} }},
     *   @OA\Parameter(
     *       description="course Id",
@@ -139,7 +139,7 @@ class CourseController extends Controller
  *      summary="Tutor - aggiunge utenti al corso",
  *      description="Add user to course",
  *      operationId="addUsersCourse",
- *      tags={"UsersCourses"},
+ *      tags={"Progress"},
  *      security={{ "apiAuth": {} }},
  *      @OA\Parameter(
  *          description="course Id",
@@ -206,7 +206,7 @@ class CourseController extends Controller
          *      summary="Tutor - rimuove un utente dal corso, passandogli l'id dell'utente nel body",
          *      description="remove user from course",
          *      operationId="removeUsersCourse",
-         *      tags={"UsersCourses"},
+         *      tags={"Progress"},
          *      security={{ "apiAuth": {} }},
          *      @OA\Parameter(
          *          description="course id",

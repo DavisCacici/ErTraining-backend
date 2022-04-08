@@ -60,7 +60,7 @@
         "/api/courses/getUsersCourse/{id}": {
             "get": {
                 "tags": [
-                    "UsersCourses"
+                    "Progress"
                 ],
                 "summary": "Ritorna tutte le informazioni degli utenti iscritti ad un corso",
                 "description": "Get all the users of a course",
@@ -92,7 +92,7 @@
         "/api/courses/addUsersCourse/{course_id}": {
             "post": {
                 "tags": [
-                    "UsersCourses"
+                    "Progress"
                 ],
                 "summary": "Tutor - aggiunge utenti al corso",
                 "description": "Add user to course",
@@ -143,7 +143,7 @@
         "/api/courses/removeUsersCourse/{course_id}": {
             "delete": {
                 "tags": [
-                    "UsersCourses"
+                    "Progress"
                 ],
                 "summary": "Tutor - rimuove un utente dal corso, passandogli l'id dell'utente nel body",
                 "description": "remove user from course",
