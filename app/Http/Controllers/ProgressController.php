@@ -22,9 +22,34 @@ class ProgressController extends Controller
         return response()->json($progres, 200);
     }
 
+     /**
+    * @OA\Get(
+    *   path="/api/getProgress/{id}",
+    *   summary="Insegnate - Ritorna tutti i progress degli utenti che partecipano al corso indicato",
+    *   description="Get all the users and their progress of a course",
+    *   operationId="getProgress",
+    *   tags={"Progress"},
+    *   security={{ "apiAuth": {} }},
+    *   @OA\Parameter(
+    *       description="course Id",
+    *       in="path",
+    *       name="id",
+    *       required=true,
+    *       @OA\Schema(
+    *           type="integer",
+    *           format="int64"
+    *       )
+    *   ),
+    *   @OA\Response(
+    *       response=200,
+    *       description="Success"
+    *   )
+    *)
+    */
+
     function getProgress($id){
         $getProgress = DB::table('progress')
-        ->select('progress.step_id','progress.state','users.user_name', 'users.id', 'users.email', 'users.role_id')
+        ->select('progress.step_id','progress.state','users.user_name', 'users.id', 'users.email', 'users.role_id','progress.id',)
         ->join('courses', 'courses.id', '=', 'progress.course_id')
         ->join('users', 'users.id','=', 'progress.user_id')
         ->where('courses.id','=', $id)
@@ -33,9 +58,42 @@ class ProgressController extends Controller
         return response()->json($getProgress, 200);
     }
 
+        /**
+ * @OA\Put(
+ *      path="/api/setStateProgress/{id}",
+ *      summary="editCourse",
+ *      description="Insegnate - Cambia lo stato da non abilitato ad abilitato",
+ *      operationId="setStateProgress",
+ *      tags={"Progress"},
+ *      security={{ "apiAuth": {} }},
+ *      @OA\Parameter(
+ *          description="progress Id",
+ *          in="path",
+ *          name="id",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="integer",
+ *              format="int64"
+ *          )
+ *      ),
+ *      @OA\RequestBody(
+ *          description="User credentials",
+ *          @OA\JsonContent(
+ *              required={"state"},
+ *                  @OA\Property(property="state", type="string", format="state"),
+ *              ),
+ *      ),
+ *
+ * @OA\Response(
+ *    response=200,
+ *    description="OK",
+ *      )
+ *  )
+ */
+
     function setStateProgress(Request $request, $id){
         $state = $request['state'];
-        if($state!=config('enums.state.progres.1') && $state!=config('enums.state.progres.2')){
+        if($state!=config('enums.state.progres.2')){
             return response("Scelta non concessa");
         }
         DB::update("update progress set state = \"$state\" where id = $id");
@@ -64,6 +122,39 @@ class ProgressController extends Controller
             }
         return response("Stato aggiornato", 200);
     }
+
+/**
+ * @OA\Put(
+ *      path="/api/changeStateProgress/{id}",
+ *      summary="editCourse",
+ *      description="Studente - cambia lo stato da abilitato ad in corso, da in corso a finito e crea il prossimo progress",
+ *      operationId="changeStateProgress",
+ *      tags={"Progress"},
+ *      security={{ "apiAuth": {} }},
+ *      @OA\Parameter(
+ *          description="progress Id",
+ *          in="path",
+ *          name="id",
+ *          required=true,
+ *          @OA\Schema(
+ *              type="integer",
+ *              format="int64"
+ *          )
+ *      ),
+ *      @OA\RequestBody(
+ *          description="User credentials",
+ *          @OA\JsonContent(
+ *              required={"state"},
+ *                  @OA\Property(property="state", type="string", format="state"),
+ *              ),
+ *      ),
+ *
+ * @OA\Response(
+ *    response=200,
+ *    description="OK",
+ *      )
+ *  )
+ */
 
     function changeStateProgress(Request $request, $id){
         $state = $request['state'];

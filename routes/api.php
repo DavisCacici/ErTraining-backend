@@ -74,6 +74,7 @@ Route::middleware('tutor')->group(function(){
         Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse']);
         Route::get('/getUsersCourse/{id}', [CourseController::class, 'getUsersCourse']);
         Route::match(['get', 'post'],'/addUsersCourse/{course_id}', [CourseController::class, 'addUsersCourse']);
+        Route::delete('/removeUsersCourse/{course_id}', [CourseController::class, 'removeUsersCourse']);
     });
 
     //courses
