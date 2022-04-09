@@ -155,9 +155,16 @@ class CourseController extends Controller
  *          description="User credentials",
  *          @OA\JsonContent(
  *              required={"user_id"},
- *                  @OA\Property(property="user_id", type="int", format="user_id")
- *              ),
- *      ),
+ *              @OA\Property(
+ *                  property="users",
+ *                  type="array",
+ *                  @OA\Items(
+ *                      type="integer",
+ *                      format="int64"
+ *                  ),
+ *              )
+ *          )
+ *     ),
  *
  * @OA\Response(
  *    response=200,
