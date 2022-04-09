@@ -123,7 +123,7 @@ class CourseController extends Controller
 
     function getUsersCourse($id){
         $getUsersCourse = DB::table('progress')
-        ->select('users.user_name', 'users.id', 'users.email', 'users.role_id')
+        ->select('users.user_name', 'users.id', 'users.email', 'users.role_id', "progress.id")
         ->join('courses', 'courses.id', '=', 'progress.course_id')
         ->join('users', 'users.id','=', 'progress.user_id')
         ->where('courses.id','=', $id)
