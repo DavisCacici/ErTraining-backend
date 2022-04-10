@@ -71,7 +71,7 @@ class ProgressController extends Controller
         /**
  * @OA\Put(
  *      path="/api/setStateProgress/{id}",
- *      summary="editCourse",
+ *      summary="Insegnate - Cambia lo stato da non abilitato ad abilitato",
  *      description="Insegnate - Cambia lo stato da non abilitato ad abilitato",
  *      operationId="setStateProgress",
  *      tags={"Progress"},
@@ -145,7 +145,7 @@ class ProgressController extends Controller
 /**
  * @OA\Put(
  *      path="/api/changeStateProgress/{id}",
- *      summary="editCourse",
+ *      summary="Studente - cambia lo stato da abilitato ad in corso, da in corso a finito e crea il prossimo progress",
  *      description="Studente - cambia lo stato da abilitato ad in corso, da in corso a finito e crea il prossimo progress",
  *      operationId="changeStateProgress",
  *      tags={"Progress"},
