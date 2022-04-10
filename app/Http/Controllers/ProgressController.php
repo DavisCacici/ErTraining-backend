@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 
 class ProgressController extends Controller
 {
@@ -47,7 +48,16 @@ class ProgressController extends Controller
     *)
     */
 
-    function getProgress($id){
+    function getProgress(Request $request, $id){
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = User::find($jwtPayload->id);
+        $role_id = $user['role_id'];
+        if ($role_id != 1 and $role_id != 2){
+            return response("utente non abilitato");
+        }
         $getProgress = DB::table('progress')
         ->select('progress.step_id','progress.state','users.user_name', 'users.id', 'users.email', 'users.role_id','progress.id',)
         ->join('courses', 'courses.id', '=', 'progress.course_id')
@@ -92,6 +102,15 @@ class ProgressController extends Controller
  */
 
     function setStateProgress(Request $request, $id){
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = User::find($jwtPayload->id);
+        $role_id = $user['role_id'];
+        if ($role_id != 1 and $role_id != 2){
+            return response("utente non abilitato");
+        }
         $state = $request['state'];
         if($state!=config('enums.state.progres.2')){
             return response("Scelta non concessa");

@@ -106,6 +106,29 @@ class UserController extends Controller
         ]);
     }
 
+
+    /**
+ * @OA\Post(
+ *      path="/api/recovery",
+ *      summary="Tutti - resettare la password se dimenticata passando un'email valida",
+ *      description="recovery",
+ *      operationId="recovery",
+ *      tags={"Auth"},
+ *      @OA\RequestBody(
+ *          description="User email",
+ *          @OA\JsonContent(
+ *              required={"Email"},
+ *                  @OA\Property(property="email", type="string", format="email")
+ *              ),
+ *      ),
+ *
+ * @OA\Response(
+ *    response=200,
+ *    description="OK",
+ *      )
+ *  )
+ */
+
     public function recovery(Request $request)
     {
 
@@ -123,6 +146,22 @@ class UserController extends Controller
 
     }
 
+    /**
+ * @OA\Get(
+ *      path="/api/profile",
+ *      summary="Tutti - profilo utente",
+ *      description="Profile of a user",
+ *      operationId="profile",
+ *      tags={"Users"},
+ *      security={{ "apiAuth": {} }},
+ *
+ * @OA\Response(
+ *    response=200,
+ *    description="OK",
+ *      )
+ *  )
+ */
+
     public function profile(Request $request)
     {
         $token = $request->bearerToken();
@@ -136,6 +175,29 @@ class UserController extends Controller
         $response = ['message'=>'token non valido'];
         return response()->json($response, 201);
     }
+
+    /**
+ * @OA\Post(
+ *      path="/api/resetPassword",
+ *      summary="Tutti - permette di cambiare la password",
+ *      description="resetPassword",
+ *      operationId="resetPassword",
+ *      security={{ "apiAuth": {} }},
+ *      tags={"Users"},
+ *      @OA\RequestBody(
+ *          description="User credentials",
+ *          @OA\JsonContent(
+ *              required={"password"},
+ *                  @OA\Property(property="password", type="string", format="password")
+ *              ),
+ *      ),
+ *
+ * @OA\Response(
+ *    response=200,
+ *    description="OK",
+ *      )
+ *  )
+ */
 
     public function resetPassword(Request $request)
     {
@@ -204,7 +266,16 @@ class UserController extends Controller
     *)
     */
 
-    function usersList(){
+    function usersList(Request $request){
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = User::find($jwtPayload->id);
+        $role_id = $user['role_id'];
+        if ($role_id != 1){
+            return response("utente non abilitato");
+        }
         $usersList = DB::table('users')
         ->select('users.id', 'users.user_name', 'users.email')->get();
         // dd($progres);
@@ -226,7 +297,16 @@ class UserController extends Controller
     *)
     */
 
-    function tutorsList(){
+    function tutorsList(Request $request){
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = User::find($jwtPayload->id);
+        $role_id = $user['role_id'];
+        if ($role_id != 1){
+            return response("utente non abilitato");
+        }
         $tutorsList = DB::table('users')
         ->select('users.id', 'users.user_name', 'users.email')
         ->where('users.role_id', '=', '1')->get();
@@ -248,7 +328,16 @@ class UserController extends Controller
     *   )
     *)
     */
-    function teachersList(){
+    function teachersList(Request $request){
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = User::find($jwtPayload->id);
+        $role_id = $user['role_id'];
+        if ($role_id != 1){
+            return response("utente non abilitato");
+        }
         $teachersList = DB::table('users')
         ->select('users.id', 'users.user_name', 'users.email')
         ->where('users.role_id', '=', '2')->get();
@@ -271,7 +360,16 @@ class UserController extends Controller
     *)
     */
 
-    function studentsList(){
+    function studentsList(Request $request){
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = User::find($jwtPayload->id);
+        $role_id = $user['role_id'];
+        if ($role_id != 1){
+            return response("utente non abilitato");
+        }
         $studentsList = DB::table('users')
         ->select('users.id', 'users.user_name', 'users.email')
         ->where('users.role_id', '=', '3')->get();
@@ -304,7 +402,16 @@ class UserController extends Controller
     *)
     */
 
-    function getUser($id){
+    function getUser($id, Request $request){
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = User::find($jwtPayload->id);
+        $role_id = $user['role_id'];
+        if ($role_id != 1){
+            return response("utente non abilitato");
+        }
         $getUser = DB::table('users')
         ->select('users.id', 'users.user_name', 'users.email', 'users.role_id')
         ->where('users.id', '=', $id)->get();
@@ -339,6 +446,15 @@ class UserController extends Controller
  */
 
     function addUser(Request $request){
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = User::find($jwtPayload->id);
+        $role_id = $user['role_id'];
+        if ($role_id != 1){
+            return response("utente non abilitato");
+        }
         $user_name = $request['user_name'];
         $email = $request['email'];
         $password = $request['password'];
@@ -390,6 +506,15 @@ class UserController extends Controller
  */
 
     function editUser(Request $request, $id){
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = User::find($jwtPayload->id);
+        $role_id = $user['role_id'];
+        if ($role_id != 1){
+            return response("utente non abilitato");
+        }
         $changeValue = false;
         $user = User::find($id);
         $user_name = $request['user_name'];
@@ -437,8 +562,16 @@ class UserController extends Controller
     *)
     */
 
-    function deleteUser($id){
-
+    function deleteUser(Request $request, $id){
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = User::find($jwtPayload->id);
+        $role_id = $user['role_id'];
+        if ($role_id != 1){
+            return response("utente non abilitato");
+        }
         $user = User::find($id);
         if ($user){
             $user->delete();

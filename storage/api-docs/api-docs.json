@@ -62,7 +62,7 @@
                 "tags": [
                     "Progress"
                 ],
-                "summary": "Ritorna tutte le informazioni degli utenti iscritti ad un corso",
+                "summary": "Tutor - Ritorna tutte le informazioni degli utenti iscritti ad un corso",
                 "description": "Get all the users of a course",
                 "operationId": "getUsersCourse",
                 "parameters": [
@@ -309,7 +309,7 @@
                 "tags": [
                     "Courses"
                 ],
-                "summary": "Tutor, cancella il corso indicato",
+                "summary": "Tutor - cancella il corso indicato",
                 "description": "delete the course by id",
                 "operationId": "deleteCourse",
                 "parameters": [
@@ -533,6 +533,99 @@
                 "responses": {
                     "200": {
                         "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/recovery": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Tutti - resettare la password se dimenticata passando un'email valida",
+                "description": "recovery",
+                "operationId": "recovery",
+                "requestBody": {
+                    "description": "User email",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "Email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            }
+        },
+        "/api/profile": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Tutti - profilo utente",
+                "description": "Profile of a user",
+                "operationId": "profile",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/resetPassword": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Tutti - permette di cambiare la password",
+                "description": "resetPassword",
+                "operationId": "resetPassword",
+                "requestBody": {
+                    "description": "User credentials",
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "password"
+                                ],
+                                "properties": {
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK"
                     }
                 },
                 "security": [
