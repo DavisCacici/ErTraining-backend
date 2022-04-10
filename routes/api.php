@@ -70,7 +70,7 @@ Route::middleware('tutor')->group(function(){
         Route::post('/addUser', [UserController::class, 'addUser']);
         /**Chiamata che serve per modificare un nuovo utente passando l'id dell'utente al suo interno user_name, password, email e role_id */
         Route::put('editUser/{id}', [UserController::class, 'editUser']);
-        /**Chiamata per eliminare */
+        /**Chiamata per eliminare un qualsiasi id basta passare l'id*/
         Route::delete('/deleteUser/{id}', [UserController::class, 'deleteUser']);
     });
     Route::prefix('courses')->group(function(){
