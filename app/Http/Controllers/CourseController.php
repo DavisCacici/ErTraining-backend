@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\CourseResource;
+use App\Http\Resources\UserResource;
+use App\Http\Resources\ProgressResource;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -17,10 +19,12 @@ class CourseController extends Controller
         $tokenParts = explode(".", $token);
         $tokenPayload = base64_decode($tokenParts[1]);
         $jwtPayload = json_decode($tokenPayload);
-
-        $course = Course::whereHas('users', function($query) use ($jwtPayload){
-            $query->where('id', $jwtPayload);
-        })->get();
+        $id = $jwtPayload->id;
+        // $course = Progress::whereHas('user', function($query) use ($id){
+        //     $query->where('id', $id);
+        // })->get();
+        $course = User::find($id)->courses;
+        // dd($course);
 
         return CourseResource::collection($course);
         // $courses = DB::table('course_user', 'cu')
@@ -49,10 +53,8 @@ class CourseController extends Controller
     */
 
     function coursesList(){
-        $coursesList = DB::table('courses')
-        ->select('courses.id', 'courses.name', 'courses.description')
-        ->get();
-        return response()->json($coursesList, 200);
+        $course = Course::all();
+        return CourseResource::collection($course);
     }
 
     /**
@@ -82,15 +84,12 @@ class CourseController extends Controller
 
     function getCourse($id){
         $course = Course::find($id);
-
-        if($course){
-            $getCourse = DB::table('courses')
-            ->select('courses.id', 'courses.name', 'courses.state','courses.description')
-            ->where('courses.id', '=', $id)->get();
-
-            return response()->json($getCourse, 200);
+        if(!$course)
+        {
+            return response("corso non trovato",404);
         }
-        return response("corso non trovato",404);
+
+        return new CourseResource($course);
     }
 
      /**
@@ -128,6 +127,15 @@ class CourseController extends Controller
         ->where('users.role_id','!=','1') //per rimuovere i tutor
         ->get();
         return response()->json($getUsersCourse, 200);
+        // $progress = Progress::whereHas('course' function());
+        // $users = User::whereHas('courses', function($query) use($id){
+        //     $query->where('id', $id);
+        // })->where('role_id', '!=', 1)->where('role_id', '!=', 2)->get();
+        // $users = Course::find($id)->with('users', 'progress')->get();
+        // $users = Progress::where('course_id', $id)->get();
+        // ->users->where('role_id', '!=', 1)->where('role_id', '!=', 2);
+        // return $users;
+        // return ProgressResource::collection($users);
     }
 
  /**
@@ -171,9 +179,10 @@ class CourseController extends Controller
  */
 
     function addUsersCourse(Request $request, $course_id){
+        $request->validate([
+            'users' => 'required|array',
+        ]);
         $course = Course::find($course_id);
-        $count_student = 0;
-        $count_teacher = 0;
         if($course)
         {
             foreach($request['users'] as $userid)
@@ -188,23 +197,18 @@ class CourseController extends Controller
                             'user_id' => $userid,
                             'course_id' => $course_id
                         ]);
-                        $count_student += 1;
                     }
                     if($user->role_id == 1 || $user->role_id == 2){
                         Progress::create([
                             'user_id' => $userid,
                             'course_id' => $course_id
                         ]);
-                        $count_teacher += 1;
                     }
                 }
-                
+
 
             }
-            $response = ['message' => "Gli utenti sono stati inseriti con successo", 
-                        'studenti' => $count_student,
-                        'teacher o tutor' => $count_teacher
-                    ];
+            $response = ['message' => "Gli utenti sono stati inseriti con successo"];
             return response()->json($response, 200);
         }
 
@@ -244,9 +248,16 @@ class CourseController extends Controller
      *  )
      */
     function removeUsersCourse(Request $request, $course_id){
+        request()->validate([
+            'user_id' => 'required'
+        ]);
+
         $user_id = $request['user_id'];
-        Progress::where('user_id', $user_id)->where('course_id', $course_id)->delete();
-        // DB::delete("delete from progress where user_id = $user_id and course_id = $course_id");
+        $progress = Progress::where('user_id', $user_id)->where('course_id', $course_id)->get();
+        foreach($progress as $p)
+        {
+            $p->delete();
+        }
         return response("Utente eliminato con successo dal corso");
     }
 //prende in ingresso lo user_id ed il course_id,
@@ -282,14 +293,14 @@ class CourseController extends Controller
 
 
     function addCourse(Request $request){
-        $request->validate([
+        request()->validate([
             'name' => 'required',
             'description' => 'required|max:191',
         ]);
         $name = $request['name'];
         $state = config('enums.state.course.1');
         $description = $request['description'];
-        
+
         Course::create([
             'name' => $name,
             'state' => $state,
@@ -337,7 +348,7 @@ class CourseController extends Controller
 
         $course = Course::findOrFail($id);
         $course->fill($request->all())->save();
-        
+
         return response()->json("Modifiche Salvate", 200);
 
     }
@@ -374,9 +385,12 @@ class CourseController extends Controller
             $course->delete();
             DB::delete('delete from progress where course_id = ?', [$id]);
             $response = 'Record eliminato con successo';
-            return response()->json($response, 200);
+            return response($response, 200);
         }
-        return response()->json("Corso non trovato", 404);
+        else {
+            return response("Corso non trovato", 404);
+        }
+
     }
 
 }

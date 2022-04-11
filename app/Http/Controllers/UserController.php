@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\User2Resource;
 use App\Http\Resources\UserResource;
 use App\Mail\Recovery;
 use App\Mail\Register;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Progress;
-use Illuminate\Auth\Events\Validated;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * @OA\SecurityScheme(
@@ -318,13 +317,13 @@ class UserController extends Controller
  */
 
     function addUser(Request $request){
-        $request->validate([
-            'email' => 'required|unique:users|max:255',
+        $rules = [
             'user_name' => 'required',
-            'password' => 'required|min:6',
-            'role_id'=>'required',
-        ]);
-
+            'email'    => 'required|email',
+            'password' => 'required',
+            'role_id' => 'required',
+        ];
+        request()->validate($rules);
         $user_name = $request['user_name'];
         $email = $request['email'];
         $password = $request['password'];
@@ -336,9 +335,8 @@ class UserController extends Controller
             'role_id'=> $role_id
         ]);
         Mail::to($email)->send(new Register($email, $password));
-
         $response = ['message' => 'è stata inviata una email con le credenziali alla email indicata'];
-        return response()->json($response, 200);
+        return response()->json($response);
 
 
     }
@@ -428,9 +426,14 @@ class UserController extends Controller
     function deleteUser($id){
 
         $user = User::find($id);
-        if ($user){
+        if ($user)
+        {
             $user->delete();
-            Progress::where('user_id',$id)->delete();
+            $progress = Progress::where('user_id',$id)->get();
+            foreach($progress as $p)
+            {
+                $p->delete();
+            }
             return response("Record deleted successfully");
         }
         return response("Utente non presente", 404);
