@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Mail\Recovery;
 use App\Mail\Register;
@@ -316,14 +317,14 @@ class UserController extends Controller
  *  )
  */
 
-    function addUser(Request $request){
-        $rules = [
-            'user_name' => 'required',
-            'email'    => 'required|email',
-            'password' => 'required',
-            'role_id' => 'required',
-        ];
-        request()->validate($rules);
+    function addUser(RegisterRequest $request){
+        // $rules = [
+        //     'user_name' => 'required',
+        //     'email'    => 'required|email',
+        //     'password' => 'required',
+        //     'role_id' => 'required',
+        // ];
+        // request()->validate($rules);
         $user_name = $request['user_name'];
         $email = $request['email'];
         $password = $request['password'];
