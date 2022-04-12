@@ -176,4 +176,17 @@ class ProgressController extends Controller
             }
         return response("Stato aggiornato", 200);
     }
+
+    public function changeProgress($progress_id)
+    {
+        $progress = Progress::find($progress_id);
+        if($progress)
+        {
+            $progress->state = config('enums.state.progres.3');
+            $progress->save();
+            event(new SetState('In Corso'));
+            return response('stato cambiato con successo');
+        }
+        return response('Progresso non trovato', 404);
+    }
 }

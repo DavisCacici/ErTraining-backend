@@ -90,6 +90,7 @@ Route::middleware('teacher')->group(function(){
  */
 //in questo gruppo può fare le chiamate solo chi ha il ruole student
 Route::middleware('student')->group(function(){
+    Route::put('/changeProgress/{progress_id}', [ProgressController::class, 'changeProgress']);
     Route::get('/courseStudent', [CourseController::class, 'index']);
     Route::match(['put', 'get', 'post'],'/changeStateProgress/{id}', [ProgressController::class, 'changeStateProgress']);
 });
