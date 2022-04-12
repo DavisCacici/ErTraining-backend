@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\EditUserRequest;
+use App\Http\Requests\LoginRequest;
+use App\Http\Requests\RecoveryRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\ResetPassword;
 use App\Http\Resources\UserResource;
 use App\Mail\Recovery;
 use App\Mail\Register;
@@ -54,7 +57,7 @@ class UserController extends Controller
  *     )
  * )
  */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
         $user = User::where('email',$request['email'])->with('role')->first();
         if($user)
@@ -110,7 +113,7 @@ class UserController extends Controller
         ]);
     }
 
-    public function recovery(Request $request)
+    public function recovery(RecoveryRequest $request)
     {
 
         $user = User::where('email',$request['email'])->first();
@@ -141,7 +144,7 @@ class UserController extends Controller
         return response()->json($response, 201);
     }
 
-    public function resetPassword(Request $request)
+    public function resetPassword(ResetPassword $request)
     {
         $token = $request->bearerToken();
         $tokenParts = explode(".", $token);
@@ -168,10 +171,8 @@ class UserController extends Controller
         $user = User::find($jwtPayload->id);
         if($user)
         {
-            $user->email = $request['email'];
-            $user->name = $request['user_name'];
-            $user->save();
-            $response = ['message'=>'dati cambiati con successo', 'user'=>$user];
+            $user->update($request->all());
+            $response = ['message'=>'dati cambiati con successo'];
             return response()->json($response, 200);
         }
         $response = ['message'=>'token non valido'];

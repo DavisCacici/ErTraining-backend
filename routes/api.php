@@ -59,7 +59,7 @@ Route::middleware('tutor')->group(function(){
         Route::put('editCourse/{id}', [CourseController::class, 'editCourse']);
         Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse']);
         Route::get('/getUsersCourse/{id}', [CourseController::class, 'getUsersCourse']);
-        Route::post('/addUsersCourse', [CourseController::class, 'addUsersCourse']);
+        Route::post('/addUsersCourse/{course_id}', [CourseController::class, 'addUsersCourse']);
         Route::delete('/removeUsersCourse/{course_id}', [CourseController::class, 'removeUsersCourse']);
     });
 
