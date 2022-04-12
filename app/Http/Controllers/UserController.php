@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EditUserRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Mail\Recovery;
@@ -318,13 +319,6 @@ class UserController extends Controller
  */
 
     function addUser(RegisterRequest $request){
-        // $rules = [
-        //     'user_name' => 'required',
-        //     'email'    => 'required|email',
-        //     'password' => 'required',
-        //     'role_id' => 'required',
-        // ];
-        // request()->validate($rules);
         $user_name = $request['user_name'];
         $email = $request['email'];
         $password = $request['password'];
@@ -338,8 +332,6 @@ class UserController extends Controller
         Mail::to($email)->send(new Register($email, $password));
         $response = ['message' => 'è stata inviata una email con le credenziali alla email indicata'];
         return response()->json($response);
-
-
     }
 
 /**
@@ -376,22 +368,11 @@ class UserController extends Controller
  *  )
  */
 
-    function editUser(Request $request, $id){
-        $changeValue = false;
+    function editUser(EditUserRequest $request, $id){
         $user = User::find($id);
-        $user_name = $request['user_name'];
-        $email = $request['email'];
-        if($user_name != null){
-            $user->user_name = $user_name;
-            $changeValue = true;
-        }
-        if($email != null){
-            $user->email = $email;
-            $changeValue = true;
-        }
 
-        $user->save();
-        if($changeValue == true){
+        if($user){
+            $user->update($request->all());
             return response("I valori sono stati cambiati correttamente");
         }
         return response("Nessun valore è stato cambiato");

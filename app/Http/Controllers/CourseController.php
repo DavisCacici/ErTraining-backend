@@ -2,9 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CourseResource;
-use App\Http\Resources\UserResource;
-use App\Http\Resources\ProgressResource;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -19,22 +16,24 @@ class CourseController extends Controller
         $tokenParts = explode(".", $token);
         $tokenPayload = base64_decode($tokenParts[1]);
         $jwtPayload = json_decode($tokenPayload);
-        $id = $jwtPayload->id;
-        // $course = Progress::whereHas('user', function($query) use ($id){
-        //     $query->where('id', $id);
-        // })->get();
-        $course = User::find($id)->courses;
-        // dd($course);
+        $courses = DB::table('course_user', 'cu')
+        ->join('courses', 'cu.course_id', '=', 'courses.id')
+        ->join('users', 'cu.user_id', '=', 'users.id')
+        ->select('courses.id', 'courses.name', 'courses.state', 'courses.description')
+        ->where('users.id', '=', $jwtPayload->id)->get();
+        $response = $courses;
 
-        return CourseResource::collection($course);
-        // $courses = DB::table('course_user', 'cu')
-        // ->join('courses', 'cu.course_id', '=', 'courses.id')
-        // ->join('users', 'cu.user_id', '=', 'users.id')
-        // ->select('courses.id', 'courses.name', 'courses.state', 'courses.description')
-        // ->where('users.id', '=', $jwtPayload->id)->get();
-        // $response = $courses;
+        return response()->json($response, 200);
+    }
 
-        // return response()->json($response, 200);
+    public function create(Request $request)
+    {
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+
+        $request->file();
     }
 
     /**
@@ -52,9 +51,20 @@ class CourseController extends Controller
     *)
     */
 
-    function coursesList(){
-        $course = Course::all();
-        return CourseResource::collection($course);
+    function coursesList(Request $request){
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = User::find($jwtPayload->id);
+        $role_id = $user['role_id'];
+        if ($role_id != 1){
+            return response("utente non abilitato");
+        }
+        $coursesList = DB::table('courses')
+        ->select('courses.id', 'courses.name', 'courses.description')
+        ->get();
+        return response()->json($coursesList, 200);
     }
 
     /**
@@ -82,20 +92,32 @@ class CourseController extends Controller
     *)
     */
 
-    function getCourse($id){
-        $course = Course::find($id);
-        if(!$course)
-        {
-            return response("corso non trovato",404);
+    function getCourse(Request $request, $id){
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = User::find($jwtPayload->id);
+        $role_id = $user['role_id'];
+        if ($role_id != 1){
+            return response("utente non abilitato");
         }
+        $course = Course::find($id);
 
-        return new CourseResource($course);
+        if($course){
+            $getCourse = DB::table('courses')
+            ->select('courses.id', 'courses.name', 'courses.state','courses.description')
+            ->where('courses.id', '=', $id)->get();
+
+            return response()->json($getCourse, 200);
+        }
+        return response("corso non trovato",404);
     }
 
      /**
     * @OA\Get(
     *   path="/api/courses/getUsersCourse/{id}",
-    *   summary="Ritorna tutte le informazioni degli utenti iscritti ad un corso",
+    *   summary="Tutor - Ritorna tutte le informazioni degli utenti iscritti ad un corso",
     *   description="Get all the users of a course",
     *   operationId="getUsersCourse",
     *   tags={"Progress"},
@@ -118,8 +140,9 @@ class CourseController extends Controller
     */
 
     function getUsersCourse($id){
+
         $getUsersCourse = DB::table('progress')
-        ->select('users.user_name', 'users.id', 'users.email', 'users.role_id', "progress.id")
+        ->select('users.user_name', 'users.id', 'users.email', 'users.role_id')
         ->join('courses', 'courses.id', '=', 'progress.course_id')
         ->join('users', 'users.id','=', 'progress.user_id')
         ->where('courses.id','=', $id)
@@ -127,15 +150,6 @@ class CourseController extends Controller
         ->where('users.role_id','!=','1') //per rimuovere i tutor
         ->get();
         return response()->json($getUsersCourse, 200);
-        // $progress = Progress::whereHas('course' function());
-        // $users = User::whereHas('courses', function($query) use($id){
-        //     $query->where('id', $id);
-        // })->where('role_id', '!=', 1)->where('role_id', '!=', 2)->get();
-        // $users = Course::find($id)->with('users', 'progress')->get();
-        // $users = Progress::where('course_id', $id)->get();
-        // ->users->where('role_id', '!=', 1)->where('role_id', '!=', 2);
-        // return $users;
-        // return ProgressResource::collection($users);
     }
 
  /**
@@ -179,87 +193,76 @@ class CourseController extends Controller
  */
 
     function addUsersCourse(Request $request, $course_id){
-        $request->validate([
-            'users' => 'required|array',
-        ]);
         $course = Course::find($course_id);
+        $count_student = 0;
+        $count_teacher = 0;
         if($course)
         {
             foreach($request['users'] as $userid)
             {
                 $user = User::find($userid);
-                if(!Progress::where('course_id', $course_id)->where('user_id', $userid)->exists())
-                {
-                    if($user->role_id == 3){
-                        Progress::create([
-                            'step_id' => 1,
-                            'state' => config('enums.state.progres.1'),
-                            'user_id' => $userid,
-                            'course_id' => $course_id
-                        ]);
-                    }
-                    if($user->role_id == 1 || $user->role_id == 2){
-                        Progress::create([
-                            'user_id' => $userid,
-                            'course_id' => $course_id
-                        ]);
-                    }
+                if($user->role_id == 3){
+                    Progress::create([
+                        'step_id' => 1,
+                        'state' => config('enums.state.progres.1'),
+                        'user_id' => $userid,
+                        'course_id' => $course_id
+                    ]);
+                    $count_student += 1;
+                }
+                if($user->role_id == 1 || $user->role_id == 2){
+                    Progress::create([
+                        'user_id' => $userid,
+                        'course_id' => $course_id
+                    ]);
+                    $count_teacher += 1;
                 }
 
-
             }
-            $response = ['message' => "Gli utenti sono stati inseriti con successo"];
+            $response = ['message' => "sono stati inseriti $count_student studenti e $count_teacher docenti o tutor"];
             return response()->json($response, 200);
         }
 
-        $response = ['message' => "non è stata trovato il corso"];
+        $response = ['message' => "non è stata trovata l'azienda"];
         return response()->json($response, 404);
     }
-    /**
-     * @OA\delete(
-     *      path="/api/courses/removeUsersCourse/{course_id}",
-     *      summary="Tutor - rimuove un utente dal corso, passandogli l'id dell'utente nel body",
-     *      description="remove user from course",
-     *      operationId="removeUsersCourse",
-     *      tags={"Progress"},
-     *      security={{ "apiAuth": {} }},
-     *      @OA\Parameter(
-     *          description="course id",
-     *          in="path",
-     *          name="course_id",
-     *          required=true,
-     *          @OA\Schema(
-     *              type="integer",
-     *              format="int64"
-     *          )
-     *      ),
-     *      @OA\RequestBody(
-     *          description="User credentials",
-     *          @OA\JsonContent(
-     *              required={"user_id"},
-     *                  @OA\Property(property="user_id", type="int", format="user_id")
-     *              ),
-     *      ),
-     *
-     * @OA\Response(
-     *    response=200,
-     *    description="OK",
-     *      )
-     *  )
-     */
-    function removeUsersCourse(Request $request, $course_id){
-        request()->validate([
-            'user_id' => 'required'
-        ]);
-
-        $user_id = $request['user_id'];
-        $progress = Progress::where('user_id', $user_id)->where('course_id', $course_id)->get();
-        foreach($progress as $p)
-        {
-            $p->delete();
+        /**
+         * @OA\delete(
+         *      path="/api/courses/removeUsersCourse/{course_id}",
+         *      summary="Tutor - rimuove un utente dal corso, passandogli l'id dell'utente nel body",
+         *      description="remove user from course",
+         *      operationId="removeUsersCourse",
+         *      tags={"Progress"},
+         *      security={{ "apiAuth": {} }},
+         *      @OA\Parameter(
+         *          description="course id",
+         *          in="path",
+         *          name="course_id",
+         *          required=true,
+         *          @OA\Schema(
+         *              type="integer",
+         *              format="int64"
+         *          )
+         *      ),
+         *      @OA\RequestBody(
+         *          description="User credentials",
+         *          @OA\JsonContent(
+         *              required={"user_id"},
+         *                  @OA\Property(property="user_id", type="int", format="user_id")
+         *              ),
+         *      ),
+         *
+         * @OA\Response(
+         *    response=200,
+         *    description="OK",
+         *      )
+         *  )
+         */
+        function removeUsersCourse(Request $request, $course_id){
+            $user_id = $request['user_id'];
+            DB::delete("delete from progress where user_id = $user_id and course_id = $course_id");
+            return response("Utente eliminato con successo dal corso");
         }
-        return response("Utente eliminato con successo dal corso");
-    }
 //prende in ingresso lo user_id ed il course_id,
 //se l'utente ha un role_id!=3
 //crea una riga
@@ -293,15 +296,12 @@ class CourseController extends Controller
 
 
     function addCourse(Request $request){
-        request()->validate([
-            'name' => 'required',
-            'description' => 'required|max:191',
-        ]);
         $name = $request['name'];
-        $state = config('enums.state.course.1');
+        $state = $request['state'];
         $description = $request['description'];
 
-        Course::create([
+        DB::table('courses')
+        ->insert([
             'name' => $name,
             'state' => $state,
             'description'=> $description
@@ -345,18 +345,33 @@ class CourseController extends Controller
  */
 
     function editCourse(Request $request,$id){
-
-        $course = Course::findOrFail($id);
-        $course->fill($request->all())->save();
-
-        return response()->json("Modifiche Salvate", 200);
+        $changeValue = false;
+        $name = $request['name'];
+        $state = $request['state'];
+        $description = $request['description'];
+        if($name != null){
+            DB::update("update courses set name = \"$name\" where id = $id");
+            $changeValue = true;
+        }
+        if($state != null){
+            DB::update("update courses set state = \"$state\" where id = $id");
+            $changeValue = true;
+        }
+        if($request != null){
+            DB::update("update courses set description = \"$description\" where id = $id");
+            $changeValue = true;
+        }
+        if($changeValue == true){
+            return response("I valori sono stati cambiati correttamente");
+        }
+        return response("Nessun valore è stato cambiato");
 
     }
 
      /**
     * @OA\delete(
     *   path="/api/courses/deleteCourse/{id}",
-    *   summary="Tutor, cancella il corso indicato",
+    *   summary="Tutor - cancella il corso indicato",
     *   description="delete the course by id",
     *   operationId="deleteCourse",
     *   tags={"Courses"},
@@ -379,18 +394,16 @@ class CourseController extends Controller
     */
 
     function deleteCourse($id){
-        $course = Course::findOrFail($id);
-        if($course)
-        {
+
+        $course = Course::find($id);
+
+        if($course){
             $course->delete();
             DB::delete('delete from progress where course_id = ?', [$id]);
-            $response = 'Record eliminato con successo';
-            return response($response, 200);
-        }
-        else {
-            return response("Corso non trovato", 404);
-        }
 
+            return response("Record deleted successfully");
+        }
+        return response("Corso non trovato", 404);
     }
 
 }
