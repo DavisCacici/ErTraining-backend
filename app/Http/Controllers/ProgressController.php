@@ -6,6 +6,7 @@ use App\Http\Resources\ProgressResource;
 use App\Models\Progress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Events\SetState;
 
 class ProgressController extends Controller
 {
@@ -184,7 +185,7 @@ class ProgressController extends Controller
         {
             $progress->state = config('enums.state.progres.3');
             $progress->save();
-            event(new SetState('In Corso'));
+            event(new SetState('hola'));
             return response('stato cambiato con successo');
         }
         return response('Progresso non trovato', 404);

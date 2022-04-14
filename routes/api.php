@@ -65,10 +65,6 @@ Route::middleware('tutor')->group(function(){
 
 });
 
-
-
-
-
 /**
  * Chiamate per il teacher:
  *
@@ -77,10 +73,9 @@ Route::middleware('tutor')->group(function(){
  */
 //in questo gruppo può fare le chiamate solo chi ha il ruole teacher
 Route::middleware('teacher')->group(function(){
-    //Route::get('/progress/{id}', [ProgressController::class, 'index']);
     Route::get('/courseTeacher', [CourseController::class, 'index']);
     Route::get('/getProgress/{id}', [ProgressController::class, 'getProgress']);
-    Route::match(['put', 'get', 'post'],'/setStateProgress/{id}', [ProgressController::class, 'setStateProgress']);
+    // Route::match(['put', 'get', 'post'],'/setStateProgress/{id}', [ProgressController::class, 'setStateProgress']);
 });
 
 
@@ -90,9 +85,9 @@ Route::middleware('teacher')->group(function(){
  */
 //in questo gruppo può fare le chiamate solo chi ha il ruole student
 Route::middleware('student')->group(function(){
-    Route::put('/changeProgress/{progress_id}', [ProgressController::class, 'changeProgress']);
+
     Route::get('/courseStudent', [CourseController::class, 'index']);
-    Route::match(['put', 'get', 'post'],'/changeStateProgress/{id}', [ProgressController::class, 'changeStateProgress']);
+    // Route::match(['put', 'get', 'post'],'/changeStateProgress/{id}', [ProgressController::class, 'changeStateProgress']);
 });
 
 
@@ -104,3 +99,4 @@ Route::middleware('api')->group(function(){
     Route::post('/changeData', [UserController::class, 'changeData']);
 });
 
+Route::get('/changeProgress/{progress_id}', [ProgressController::class, 'changeProgress']);
