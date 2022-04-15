@@ -336,6 +336,26 @@
                 ]
             }
         },
+        "/api/getUserCourses": {
+            "get": {
+                "tags": [
+                    "Progress"
+                ],
+                "summary": "studente - Ritorna tutti i corsi di uno studente",
+                "description": "Get all the courses of a user",
+                "operationId": "getUserCourses",
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "security": [
+                    {
+                        "apiAuth": []
+                    }
+                ]
+            }
+        },
         "/api/getProgress/{id}": {
             "get": {
                 "tags": [

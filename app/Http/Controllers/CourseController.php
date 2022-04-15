@@ -457,5 +457,38 @@ class CourseController extends Controller
         }
         return response("Corso non trovato", 404);
     }
+    /**
+    * @OA\Get(
+    *   path="/api/getUserCourses",
+    *   summary="studente - Ritorna tutti i corsi di uno studente",
+    *   description="Get all the courses of a user",
+    *   operationId="getUserCourses",
+    *   tags={"Progress"},
+    *   security={{ "apiAuth": {} }},
+    *   @OA\Response(
+    *       response=200,
+    *       description="Success"
+    *   )
+    *)
+    */
+    function getUserCourses(Request $request){
+        $token = $request->bearerToken();
+        $tokenParts = explode(".", $token);
+        $tokenPayload = base64_decode($tokenParts[1]);
+        $jwtPayload = json_decode($tokenPayload);
+        $user = User::find($jwtPayload->id);
+        $id = $user['id'];
+
+        $getUserCourses = DB::table('progress')
+        ->select('courses.id', 'courses.name', 'courses.description')
+        ->where('progress.user_id', '=', $id)
+        ->where(function ($query) {
+            $query->where('progress.step_id', '=', 1)
+            ->orwhere('step_id','=',null);})
+        ->join('users', 'users.id','=', 'progress.user_id')
+        ->join('courses', 'courses.id', '=', 'progress.course_id')
+        ->get();
+        return response()->json($getUserCourses, 200);
+    }
 
 }
