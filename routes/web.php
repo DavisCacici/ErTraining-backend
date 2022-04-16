@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Events\SetState;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,4 +17,10 @@ use App\Http\Controllers\UserController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/send', [UserController::class, 'store']);
+// Route::get('/send', [UserController::class, 'store']);
+
+Route::get('/message', function () {
+    $message = 'hola';
+    $success = event(new SetState($message));
+    return $success;
+});

@@ -28,4 +28,9 @@ class CreateCourseRequest extends FormRequest
             'description' => 'required|string'
         ];
     }
+
+    public function messages()
+    {
+        
+    }
 }
