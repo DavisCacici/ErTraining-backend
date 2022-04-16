@@ -2,26 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\ProgressResource;
+use App\Models\Progress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\User;
+use App\Events\SetState;
 
 class ProgressController extends Controller
 {
-    function index($id)
-    {
-        $progres = DB::table('progress')
-                ->join('steps', 'progress.step_id', '=', 'steps.id')
-                ->join('course_user', 'progress.course_user_id', '=', 'course_user.id')
-                ->join('courses', 'course_user.course_id', '=', 'courses.id')
-                ->join('users', 'course_user.user_id', '=', 'users.id')
-                ->select(['steps.step', 'progress.state', 'users.user_name','users.email', 'courses.name'])
-                ->where('courses.id', '=', $id)
-                ->where('users.role_id', '=', 3)->get();
 
-        // dd($progres);
-        return response()->json($progres, 200);
-    }
 
      /**
     * @OA\Get(
@@ -48,30 +37,21 @@ class ProgressController extends Controller
     *)
     */
 
-    function getProgress(Request $request, $id){
-        $token = $request->bearerToken();
-        $tokenParts = explode(".", $token);
-        $tokenPayload = base64_decode($tokenParts[1]);
-        $jwtPayload = json_decode($tokenPayload);
-        $user = User::find($jwtPayload->id);
-        $role_id = $user['role_id'];
-        if ($role_id != 1 and $role_id != 2){
-            return response("utente non abilitato");
-        }
-        $getProgress = DB::table('progress')
-        ->select('progress.step_id','progress.state','users.user_name', 'users.id', 'users.email', 'users.role_id','progress.id',)
-        ->join('courses', 'courses.id', '=', 'progress.course_id')
-        ->join('users', 'users.id','=', 'progress.user_id')
-        ->where('courses.id','=', $id)
-        ->where('users.role_id','!=','1') //per rimuovere i tutor
-        ->get();
-        return response()->json($getProgress, 200);
+    function getProgress($id){
+
+        $progress = Progress::where('course_id', $id)
+                            ->whereHas('user', function($query){
+                                return $query->where('role_id', '=', 3);
+                            })
+                            ->with('course', 'user')->get();
+
+        return ProgressResource::collection($progress);
     }
 
         /**
  * @OA\Put(
  *      path="/api/setStateProgress/{id}",
- *      summary="Insegnate - Cambia lo stato da non abilitato ad abilitato",
+ *      summary="editCourse",
  *      description="Insegnate - Cambia lo stato da non abilitato ad abilitato",
  *      operationId="setStateProgress",
  *      tags={"Progress"},
@@ -102,15 +82,6 @@ class ProgressController extends Controller
  */
 
     function setStateProgress(Request $request, $id){
-        $token = $request->bearerToken();
-        $tokenParts = explode(".", $token);
-        $tokenPayload = base64_decode($tokenParts[1]);
-        $jwtPayload = json_decode($tokenPayload);
-        $user = User::find($jwtPayload->id);
-        $role_id = $user['role_id'];
-        if ($role_id != 1 and $role_id != 2){
-            return response("utente non abilitato");
-        }
         $state = $request['state'];
         if($state!=config('enums.state.progres.2')){
             return response("Scelta non concessa");
@@ -145,7 +116,7 @@ class ProgressController extends Controller
 /**
  * @OA\Put(
  *      path="/api/changeStateProgress/{id}",
- *      summary="Studente - cambia lo stato da abilitato ad in corso, da in corso a finito e crea il prossimo progress",
+ *      summary="editCourse",
  *      description="Studente - cambia lo stato da abilitato ad in corso, da in corso a finito e crea il prossimo progress",
  *      operationId="changeStateProgress",
  *      tags={"Progress"},
@@ -205,5 +176,18 @@ class ProgressController extends Controller
             return response("Stato aggiornato a Finito, creato nuovo stato di progresso");
             }
         return response("Stato aggiornato", 200);
+    }
+
+    public function changeProgress($progress_id)
+    {
+        $progress = Progress::find($progress_id);
+        if($progress)
+        {
+            $progress->state = config('enums.state.progres.3');
+            $progress->save();
+            event(new SetState('hola'));
+            return response('stato cambiato con successo');
+        }
+        return response('Progresso non trovato', 404);
     }
 }

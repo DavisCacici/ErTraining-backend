@@ -2,11 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\AddUserCourseRequest;
+use App\Http\Requests\CreateCourseRequest;
+use App\Http\Requests\EditCourseRequest;
+use App\Http\Resources\CourseResource;
+use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use App\Models\Course;
 use App\Models\Progress;
+use GuzzleHttp\Promise\Create;
 
 class CourseController extends Controller
 {
@@ -16,24 +22,13 @@ class CourseController extends Controller
         $tokenParts = explode(".", $token);
         $tokenPayload = base64_decode($tokenParts[1]);
         $jwtPayload = json_decode($tokenPayload);
-        $courses = DB::table('course_user', 'cu')
-        ->join('courses', 'cu.course_id', '=', 'courses.id')
-        ->join('users', 'cu.user_id', '=', 'users.id')
-        ->select('courses.id', 'courses.name', 'courses.state', 'courses.description')
-        ->where('users.id', '=', $jwtPayload->id)->get();
-        $response = $courses;
+        $id = $jwtPayload->id;
 
-        return response()->json($response, 200);
-    }
-
-    public function create(Request $request)
-    {
-        $token = $request->bearerToken();
-        $tokenParts = explode(".", $token);
-        $tokenPayload = base64_decode($tokenParts[1]);
-        $jwtPayload = json_decode($tokenPayload);
-
-        $request->file();
+        $course = Course::whereHas('users', function($query) use ($id){
+            $query->where('users.id', $id);
+        })->get();
+        
+        return CourseResource::collection($course);
     }
 
     /**
@@ -52,19 +47,9 @@ class CourseController extends Controller
     */
 
     function coursesList(Request $request){
-        $token = $request->bearerToken();
-        $tokenParts = explode(".", $token);
-        $tokenPayload = base64_decode($tokenParts[1]);
-        $jwtPayload = json_decode($tokenPayload);
-        $user = User::find($jwtPayload->id);
-        $role_id = $user['role_id'];
-        if ($role_id != 1){
-            return response("utente non abilitato");
-        }
-        $coursesList = DB::table('courses')
-        ->select('courses.id', 'courses.name', 'courses.description')
-        ->get();
-        return response()->json($coursesList, 200);
+       
+        $coursesList = Course::all();
+        return CourseResource::collection($coursesList);
     }
 
     /**
@@ -92,24 +77,11 @@ class CourseController extends Controller
     *)
     */
 
-    function getCourse(Request $request, $id){
-        $token = $request->bearerToken();
-        $tokenParts = explode(".", $token);
-        $tokenPayload = base64_decode($tokenParts[1]);
-        $jwtPayload = json_decode($tokenPayload);
-        $user = User::find($jwtPayload->id);
-        $role_id = $user['role_id'];
-        if ($role_id != 1){
-            return response("utente non abilitato");
-        }
+    function getCourse($id){
         $course = Course::find($id);
 
         if($course){
-            $getCourse = DB::table('courses')
-            ->select('courses.id', 'courses.name', 'courses.state','courses.description')
-            ->where('courses.id', '=', $id)->get();
-
-            return response()->json($getCourse, 200);
+            return new CourseResource($course);
         }
         return response("corso non trovato",404);
     }
@@ -139,25 +111,13 @@ class CourseController extends Controller
     *)
     */
 
-    function getUsersCourse(Request $request, $id){
-        $token = $request->bearerToken();
-        $tokenParts = explode(".", $token);
-        $tokenPayload = base64_decode($tokenParts[1]);
-        $jwtPayload = json_decode($tokenPayload);
-        $user = User::find($jwtPayload->id);
-        $role_id = $user['role_id'];
-        if ($role_id != 1){
-            return response("utente non abilitato");
-        }
-        $getUsersCourse = DB::table('progress')
-        ->select('users.user_name', 'users.id', 'users.email', 'users.role_id')
-        ->join('courses', 'courses.id', '=', 'progress.course_id')
-        ->join('users', 'users.id','=', 'progress.user_id')
-        ->where('courses.id','=', $id)
-        ->where('step_id','=',1)
-        ->where('users.role_id','!=','1') //per rimuovere i tutor
-        ->get();
-        return response()->json($getUsersCourse, 200);
+    function getUsersCourse($id){
+
+        $users = Course::find($id)->users->where('role_id', '!=', 1);
+        // $progress = Progress::where('course_id', $id)->with('step')->leftjoin('users', 'progress.user_id','=', 'users.id')->get();
+        // return $progress;
+        return UserResource::collection($users);
+
     }
 
  /**
@@ -200,19 +160,8 @@ class CourseController extends Controller
  *  )
  */
 
-    function addUsersCourse(Request $request, $course_id){
-            $token = $request->bearerToken();
-            $tokenParts = explode(".", $token);
-            $tokenPayload = base64_decode($tokenParts[1]);
-            $jwtPayload = json_decode($tokenPayload);
-            $user = User::find($jwtPayload->id);
-            $role_id = $user['role_id'];
-            if ($role_id != 1){
-                return response("utente non abilitato");
-            }
+    function addUsersCourse(AddUserCourseRequest $request, $course_id){
         $course = Course::find($course_id);
-        $count_student = 0;
-        $count_teacher = 0;
         if($course)
         {
             foreach($request['users'] as $userid)
@@ -225,22 +174,20 @@ class CourseController extends Controller
                         'user_id' => $userid,
                         'course_id' => $course_id
                     ]);
-                    $count_student += 1;
                 }
                 if($user->role_id == 1 || $user->role_id == 2){
                     Progress::create([
                         'user_id' => $userid,
                         'course_id' => $course_id
                     ]);
-                    $count_teacher += 1;
                 }
 
             }
-            $response = ['message' => "sono stati inseriti $count_student studenti e $count_teacher docenti o tutor"];
+            $response = ['message' => "gli utenti sono stati inseriti con successo"];
             return response()->json($response, 200);
         }
 
-        $response = ['message' => "non è stata trovata l'azienda"];
+        $response = ['message' => "non è stata trovato il corso"];
         return response()->json($response, 404);
     }
         /**
@@ -276,15 +223,6 @@ class CourseController extends Controller
          *  )
          */
         function removeUsersCourse(Request $request, $course_id){
-                $token = $request->bearerToken();
-                $tokenParts = explode(".", $token);
-                $tokenPayload = base64_decode($tokenParts[1]);
-                $jwtPayload = json_decode($tokenPayload);
-                $user = User::find($jwtPayload->id);
-                $role_id = $user['role_id'];
-                if ($role_id != 1){
-                    return response("utente non abilitato");
-                }
             $user_id = $request['user_id'];
             DB::delete("delete from progress where user_id = $user_id and course_id = $course_id");
             return response("Utente eliminato con successo dal corso");
@@ -321,22 +259,12 @@ class CourseController extends Controller
  */
 
 
-    function addCourse(Request $request){
-            $token = $request->bearerToken();
-            $tokenParts = explode(".", $token);
-            $tokenPayload = base64_decode($tokenParts[1]);
-            $jwtPayload = json_decode($tokenPayload);
-            $user = User::find($jwtPayload->id);
-            $role_id = $user['role_id'];
-            if ($role_id != 1){
-                return response("utente non abilitato");
-            }
+    function addCourse(CreateCourseRequest $request){
         $name = $request['name'];
-        $state = $request['state'];
+        $state = config('enums.state.course.1');
         $description = $request['description'];
 
-        DB::table('courses')
-        ->insert([
+        Course::create([
             'name' => $name,
             'state' => $state,
             'description'=> $description
@@ -379,37 +307,10 @@ class CourseController extends Controller
  *  )
  */
 
-    function editCourse(Request $request,$id){
-            $token = $request->bearerToken();
-            $tokenParts = explode(".", $token);
-            $tokenPayload = base64_decode($tokenParts[1]);
-            $jwtPayload = json_decode($tokenPayload);
-            $user = User::find($jwtPayload->id);
-            $role_id = $user['role_id'];
-            if ($role_id != 1){
-                return response("utente non abilitato");
-            }
-        $changeValue = false;
-        $name = $request['name'];
-        $state = $request['state'];
-        $description = $request['description'];
-        if($name != null){
-            DB::update("update courses set name = \"$name\" where id = $id");
-            $changeValue = true;
-        }
-        if($state != null){
-            DB::update("update courses set state = \"$state\" where id = $id");
-            $changeValue = true;
-        }
-        if($request != null){
-            DB::update("update courses set description = \"$description\" where id = $id");
-            $changeValue = true;
-        }
-        if($changeValue == true){
-            return response("I valori sono stati cambiati correttamente");
-        }
-        return response("Nessun valore è stato cambiato");
-
+    function editCourse(EditCourseRequest $request,$id){
+        $course = Course::find($id);
+        $course->update($request->all());
+        return response("I valori sono stati cambiati correttamente");
     }
 
      /**
@@ -437,16 +338,8 @@ class CourseController extends Controller
     *)
     */
 
-    function deleteCourse(Request $request, $id){
-        $token = $request->bearerToken();
-        $tokenParts = explode(".", $token);
-        $tokenPayload = base64_decode($tokenParts[1]);
-        $jwtPayload = json_decode($tokenPayload);
-        $user = User::find($jwtPayload->id);
-        $role_id = $user['role_id'];
-        if ($role_id != 1){
-            return response("utente non abilitato");
-        }
+    function deleteCourse($id){
+
         $course = Course::find($id);
 
         if($course){
