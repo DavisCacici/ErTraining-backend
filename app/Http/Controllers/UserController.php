@@ -57,7 +57,7 @@ class UserController extends Controller
  *     )
  * )
  */
-    public function login(LoginRequest $request)
+    public function login(Request $request)
     {
         $user = User::where('email',$request['email'])->with('role')->first();
         if($user)
@@ -417,7 +417,7 @@ class UserController extends Controller
             {
                 $p->delete();
             }
-            return response("Record deleted successfully");
+            return response()->json("Record deleted successfully", 200);
         }
         return response("Utente non presente", 404);
     }

@@ -75,7 +75,7 @@ Route::middleware('tutor')->group(function(){
 Route::middleware('teacher')->group(function(){
     Route::get('/courseTeacher', [CourseController::class, 'index']);
     Route::get('/getProgress/{id}', [ProgressController::class, 'getProgress']);
-    // Route::match(['put', 'get', 'post'],'/setStateProgress/{id}', [ProgressController::class, 'setStateProgress']);
+    
 });
 
 
@@ -87,7 +87,8 @@ Route::middleware('teacher')->group(function(){
 Route::middleware('student')->group(function(){
 
     Route::get('/courseStudent', [CourseController::class, 'index']);
-    // Route::match(['put', 'get', 'post'],'/changeStateProgress/{id}', [ProgressController::class, 'changeStateProgress']);
+    Route::get('/studentInProgress', [CourseController::class, 'studentInProgress']);
+   
 });
 
 
