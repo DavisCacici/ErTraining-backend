@@ -46,7 +46,8 @@ Route::middleware('tutor')->group(function(){
         /**Chiamata che serve per creare un nuovo utente passare al suo interno user_name, password, email e role_id */
         Route::post('/addUser', [UserController::class, 'addUser']);
         /**Chiamata che serve per modificare un nuovo utente passando l'id dell'utente al suo interno user_name, password, email e role_id */
-        Route::put('editUser/{id}', [UserController::class, 'editUser']);
+        Route::put('/editUser/{id}', [UserController::class, 'editUser']);
+        Route::put('/editPassword/{id}', [UserController::class, 'editPassword']);
         /**Chiamata per eliminare un qualsiasi id basta passare l'id*/
         Route::delete('/deleteUser/{id}', [UserController::class, 'deleteUser']);
     });

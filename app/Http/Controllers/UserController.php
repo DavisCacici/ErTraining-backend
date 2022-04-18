@@ -369,7 +369,7 @@ class UserController extends Controller
  *  )
  */
 
-    function editUser(EditUserRequest $request, $id){
+    function editUser(Request $request, $id){
         $user = User::find($id);
 
         if($user){
@@ -378,6 +378,18 @@ class UserController extends Controller
         }
         return response("Nessun valore è stato cambiato");
 
+    }
+
+    function editPassword(Request $request, $id)
+    {
+        $user = User::find($id);
+        if($user){
+            $user->password = Hash::make($request['password']);
+            $user->save();
+            $response = ['message'=>'password cambiato con successo'];
+            return response()->json($response, 200);
+        }
+        return response()->json('utente non trovato', 404);
     }
 
 
