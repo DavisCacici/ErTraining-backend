@@ -50,6 +50,7 @@ Route::middleware('tutor')->group(function(){
         Route::put('/editPassword/{id}', [UserController::class, 'editPassword']);
         /**Chiamata per eliminare un qualsiasi id basta passare l'id*/
         Route::delete('/deleteUser/{id}', [UserController::class, 'deleteUser']);
+        Route::get('/courses/{user_id}', [CourseController::class, 'getCourseUser']);
     });
 
     //courses
@@ -60,7 +61,7 @@ Route::middleware('tutor')->group(function(){
         Route::put('editCourse/{id}', [CourseController::class, 'editCourse']);
         Route::delete('/deleteCourse/{id}', [CourseController::class, 'deleteCourse']);
         Route::get('/getUsersCourse/{id}', [CourseController::class, 'getUsersCourse']);
-        Route::post('/addUsersCourse/{course_id}', [CourseController::class, 'addUsersCourse']);
+        Route::put('/addUsersCourse/{course_id}', [CourseController::class, 'addUsersCourse']);
         Route::delete('/removeUsersCourse/{course_id}', [CourseController::class, 'removeUsersCourse']);
     });
 

@@ -114,10 +114,14 @@ class CourseController extends Controller
     function getUsersCourse($id){
 
         $users = Course::find($id)->users->where('role_id', '!=', 1);
-        // $progress = Progress::where('course_id', $id)->with('step')->leftjoin('users', 'progress.user_id','=', 'users.id')->get();
-        // return $progress;
         return UserResource::collection($users);
 
+    }
+
+    function getCourseUser($user_id)
+    {
+        $course = User::find($user_id)->courses;
+        return CourseResource::collection($course);
     }
 
  /**
@@ -190,43 +194,43 @@ class CourseController extends Controller
         $response = ['message' => "non è stata trovato il corso"];
         return response()->json($response, 404);
     }
-        /**
-         * @OA\delete(
-         *      path="/api/courses/removeUsersCourse/{course_id}",
-         *      summary="Tutor - rimuove un utente dal corso, passandogli l'id dell'utente nel body",
-         *      description="remove user from course",
-         *      operationId="removeUsersCourse",
-         *      tags={"Progress"},
-         *      security={{ "apiAuth": {} }},
-         *      @OA\Parameter(
-         *          description="course id",
-         *          in="path",
-         *          name="course_id",
-         *          required=true,
-         *          @OA\Schema(
-         *              type="integer",
-         *              format="int64"
-         *          )
-         *      ),
-         *      @OA\RequestBody(
-         *          description="User credentials",
-         *          @OA\JsonContent(
-         *              required={"user_id"},
-         *                  @OA\Property(property="user_id", type="int", format="user_id")
-         *              ),
-         *      ),
-         *
-         * @OA\Response(
-         *    response=200,
-         *    description="OK",
-         *      )
-         *  )
-         */
-        function removeUsersCourse(Request $request, $course_id){
-            $user_id = $request['user_id'];
-            DB::delete("delete from progress where user_id = $user_id and course_id = $course_id");
-            return response("Utente eliminato con successo dal corso");
-        }
+    /**
+     * @OA\delete(
+     *      path="/api/courses/removeUsersCourse/{course_id}",
+     *      summary="Tutor - rimuove un utente dal corso, passandogli l'id dell'utente nel body",
+     *      description="remove user from course",
+     *      operationId="removeUsersCourse",
+     *      tags={"Progress"},
+     *      security={{ "apiAuth": {} }},
+     *      @OA\Parameter(
+     *          description="course id",
+     *          in="path",
+     *          name="course_id",
+     *          required=true,
+     *          @OA\Schema(
+     *              type="integer",
+     *              format="int64"
+     *          )
+     *      ),
+     *      @OA\RequestBody(
+     *          description="User credentials",
+     *          @OA\JsonContent(
+     *              required={"user_id"},
+     *                  @OA\Property(property="user_id", type="int", format="user_id")
+     *              ),
+     *      ),
+     *
+     * @OA\Response(
+     *    response=200,
+     *    description="OK",
+     *      )
+     *  )
+     */
+    function removeUsersCourse(Request $request, $course_id){
+        $user_id = $request['user_id'];
+        DB::delete("delete from progress where user_id = $user_id and course_id = $course_id");
+        return response("Utente eliminato con successo dal corso");
+    }
 //prende in ingresso lo user_id ed il course_id,
 //se l'utente ha un role_id!=3
 //crea una riga
@@ -259,17 +263,21 @@ class CourseController extends Controller
  */
 
 
-    function addCourse(CreateCourseRequest $request){
+    function addCourse(Request $request){
         $name = $request['name'];
         $state = config('enums.state.course.1');
         $description = $request['description'];
 
-        Course::create([
+        $course = Course::create([
             'name' => $name,
             'state' => $state,
             'description'=> $description
         ]);
-        return response()->json("Corso creato con successo", 200);
+        if($course)
+        {
+            return new CourseResource($course);
+        }
+        return response()->json("Il corso non è stato creato controlla le credenziale", 400);
     }
 
     /**
@@ -310,7 +318,7 @@ class CourseController extends Controller
     function editCourse(EditCourseRequest $request,$id){
         $course = Course::find($id);
         $course->update($request->all());
-        return response("I valori sono stati cambiati correttamente");
+        return response()->json("I valori sono stati cambiati correttamente");
     }
 
      /**
