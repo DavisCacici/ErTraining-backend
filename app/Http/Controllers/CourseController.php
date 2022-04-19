@@ -168,6 +168,7 @@ class CourseController extends Controller
         $course = Course::find($course_id);
         if($course)
         {
+            Progress::where('course_id', $course_id)->delete();
             foreach($request['users'] as $userid)
             {
                 $user = User::find($userid);
