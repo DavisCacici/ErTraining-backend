@@ -99,6 +99,7 @@ Route::middleware('api')->group(function(){
     Route::get('/profile', [UserController::class, 'profile']);
     Route::post('/resetPassword', [UserController::class, 'resetPassword']);
     Route::post('/changeData', [UserController::class, 'changeData']);
+    Route::get('/getUserCourses', [CourseController::class, 'getUserCourses']);
 });
 
 Route::get('/changeProgress/{progress_id}', [ProgressController::class, 'changeProgress']);
