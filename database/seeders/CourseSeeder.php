@@ -16,16 +16,21 @@ class CourseSeeder extends Seeder
      */
     public function run()
     {
-        for($i = 0; $i <10; $i++)
+        for($i = 1; $i <11; $i++)
         {
             DB::table('courses')->insert([
-                'name' => Str::random(10),
-                'state' => config('enums.state.course.2'),
+                'name' => 'Corso Sicurezza Base '. $i,
+                'state' => config('enums.state.course.1'),
                 'description' => Str::random(30)
             ]);
             DB::table('courses')->insert([
-                'name' => Str::random(10),
-                'state' => config('enums.state.course.3'),
+                'name' => 'Corso Sicurezza Avanzato '. $i,
+                'state' => config('enums.state.course.1'),
+                'description' => Str::random(30)
+            ]);
+            DB::table('courses')->insert([
+                'name' => 'Corso Primo Soccorso '. $i,
+                'state' => config('enums.state.course.1'),
                 'description' => Str::random(30)
             ]);
         }

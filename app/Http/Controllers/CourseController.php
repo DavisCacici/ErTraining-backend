@@ -112,8 +112,13 @@ class CourseController extends Controller
     */
 
     function getUsersCourse($id){
-
-        $users = Course::find($id)->users->where('role_id', '!=', 1);
+        $array = [];
+        $progress = Progress::where('course_id', $id)->get();
+        foreach($progress as $p){
+            $array[] = $p->user_id; 
+        }
+        $users = User::whereIn('id', $array)->get();
+        
         return UserResource::collection($users);
 
     }
@@ -169,9 +174,11 @@ class CourseController extends Controller
         if($course)
         {
             Progress::where('course_id', $course_id)->delete();
+            
             foreach($request['users'] as $userid)
             {
                 $user = User::find($userid);
+
                 if($user->role_id == 3){
                     Progress::create([
                         'step_id' => 1,
