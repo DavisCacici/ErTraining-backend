@@ -76,7 +76,7 @@ Route::middleware('tutor')->group(function(){
 Route::middleware('teacher')->group(function(){
     Route::get('/courseTeacher', [CourseController::class, 'index']);
     Route::get('/getProgress/{id}', [ProgressController::class, 'getProgress']);
-    
+
 });
 
 
@@ -89,7 +89,7 @@ Route::middleware('student')->group(function(){
 
     Route::get('/courseStudent', [CourseController::class, 'index']);
     Route::get('/studentInProgress', [CourseController::class, 'studentInProgress']);
-   
+
 });
 
 
@@ -100,6 +100,7 @@ Route::middleware('api')->group(function(){
     Route::post('/resetPassword', [UserController::class, 'resetPassword']);
     Route::post('/changeData', [UserController::class, 'changeData']);
     Route::get('/getUserCourses', [CourseController::class, 'getUserCourses']);
+    Route::get('/getProgressUser/{course_id}', [ProgressController::class, 'getProgressUser']);
 });
 
 Route::get('/changeProgress/{progress_id}', [ProgressController::class, 'changeProgress']);

@@ -27,7 +27,7 @@ class CourseController extends Controller
         $course = Course::whereHas('users', function($query) use ($id){
             $query->where('users.id', $id);
         })->get();
-        
+
         return CourseResource::collection($course);
     }
 
@@ -47,7 +47,7 @@ class CourseController extends Controller
     */
 
     function coursesList(Request $request){
-       
+
         $coursesList = Course::all();
         return CourseResource::collection($coursesList);
     }

@@ -7,6 +7,8 @@ use App\Models\Progress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Events\SetState;
+use App\Models\User;
+use App\Models\Course;
 
 class ProgressController extends Controller
 {
@@ -48,7 +50,7 @@ class ProgressController extends Controller
         return ProgressResource::collection($progress);
     }
 
- 
+
 
     public function studentInProgress($progress_id)
     {
@@ -67,7 +69,51 @@ class ProgressController extends Controller
     {
         $progress = Progress::where('course_id', $course_id);
         if($progress){
-            
+
         }
     }
+
+    /**
+    * @OA\Get(
+    *   path="/api/getProgressUser/{course_id}",
+    *   summary="studente - Ritorna tutti i progressi di un corso di uno studente",
+    *   description="Get all the progress of a course of a user",
+    *   operationId="getProgressUser",
+    *   tags={"Progress"},
+    *   security={{ "apiAuth": {} }},
+    *   @OA\Parameter(
+    *       description="course_id",
+    *       in="path",
+    *       name="course_id",
+    *       required=true,
+    *       @OA\Schema(
+    *           type="integer",
+    *           format="int64"
+    *       )
+    *   ),
+    *   @OA\Response(
+    *       response=200,
+    *       description="Success"
+    *   )
+    *)
+    */
+
+    public function getProgressUser(Request $request, $course_id){
+            $token = $request->bearerToken();
+            $tokenParts = explode(".", $token);
+            $tokenPayload = base64_decode($tokenParts[1]);
+            $jwtPayload = json_decode($tokenPayload);
+            $user = User::find($jwtPayload->id);
+            $user_id = $user['id'];
+
+            $getProgressUser = DB::table('progress')
+            ->select('progress.course_id','progress.step_id', 'progress.state')
+            ->where('progress.user_id', '=', $user_id)
+            ->where('progress.course_id', '=', $course_id)
+            ->get();
+            return response()->json($getProgressUser, 200);
+
+    }
 }
+
+

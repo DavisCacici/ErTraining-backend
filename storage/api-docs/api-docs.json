@@ -388,19 +388,19 @@
                 ]
             }
         },
-        "/api/setStateProgress/{id}": {
-            "put": {
+        "/api/getProgressUser/{course_id}": {
+            "get": {
                 "tags": [
                     "Progress"
                 ],
-                "summary": "Insegnate - Cambia lo stato da non abilitato ad abilitato",
-                "description": "Insegnate - Cambia lo stato da non abilitato ad abilitato",
-                "operationId": "setStateProgress",
+                "summary": "studente - Ritorna tutti i progressi di un corso di uno studente",
+                "description": "Get all the progress of a course of a user",
+                "operationId": "getProgressUser",
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "course_id",
                         "in": "path",
-                        "description": "progress Id",
+                        "description": "course_id",
                         "required": true,
                         "schema": {
                             "type": "integer",
@@ -408,79 +408,9 @@
                         }
                     }
                 ],
-                "requestBody": {
-                    "description": "User credentials",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "state"
-                                ],
-                                "properties": {
-                                    "state": {
-                                        "type": "string",
-                                        "format": "state"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
-                        "description": "OK"
-                    }
-                },
-                "security": [
-                    {
-                        "apiAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/changeStateProgress/{id}": {
-            "put": {
-                "tags": [
-                    "Progress"
-                ],
-                "summary": "Studente - cambia lo stato da abilitato ad in corso, da in corso a finito e crea il prossimo progress",
-                "description": "Studente - cambia lo stato da abilitato ad in corso, da in corso a finito e crea il prossimo progress",
-                "operationId": "changeStateProgress",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "progress Id",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
-                "requestBody": {
-                    "description": "User credentials",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "state"
-                                ],
-                                "properties": {
-                                    "state": {
-                                        "type": "string",
-                                        "format": "state"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK"
+                        "description": "Success"
                     }
                 },
                 "security": [
@@ -553,99 +483,6 @@
                 "responses": {
                     "200": {
                         "description": "Success"
-                    }
-                },
-                "security": [
-                    {
-                        "apiAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/recovery": {
-            "post": {
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Tutti - resettare la password se dimenticata passando un'email valida",
-                "description": "recovery",
-                "operationId": "recovery",
-                "requestBody": {
-                    "description": "User email",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "Email"
-                                ],
-                                "properties": {
-                                    "email": {
-                                        "type": "string",
-                                        "format": "email"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                }
-            }
-        },
-        "/api/profile": {
-            "get": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Tutti - profilo utente",
-                "description": "Profile of a user",
-                "operationId": "profile",
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    }
-                },
-                "security": [
-                    {
-                        "apiAuth": []
-                    }
-                ]
-            }
-        },
-        "/api/resetPassword": {
-            "post": {
-                "tags": [
-                    "Users"
-                ],
-                "summary": "Tutti - permette di cambiare la password",
-                "description": "resetPassword",
-                "operationId": "resetPassword",
-                "requestBody": {
-                    "description": "User credentials",
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "password"
-                                ],
-                                "properties": {
-                                    "password": {
-                                        "type": "string",
-                                        "format": "password"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "OK"
                     }
                 },
                 "security": [
