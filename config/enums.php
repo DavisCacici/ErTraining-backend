@@ -7,9 +7,8 @@ return[
     ],
     'state' =>[
         'course' =>[
-            1 => 'Creato',
-            2 => 'In corso',
-            3 => 'Finito',
+            1 => 'Attivo',
+            2 => 'Completato'
         ],
         'progres' =>[
             1 => 'Non Abilitato',
